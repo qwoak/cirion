@@ -1,6 +1,6 @@
 # Lisez-moi
 
-![Cirion](https://github.com/qwoak/cirion/blob/master/logo.bmp)
+![Cirion](https://github.com/qwoak/cirion/blob/master/logo.png)
 
 Cirion, un moteur de jeu à défilement latéral utilisant SDL2 et TinyXML-2.
 
