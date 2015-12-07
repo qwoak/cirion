@@ -1,5 +1,7 @@
 # Lisez-moi
 
+![Cirion](https://github.com/qwoak/cirion/blob/master/res/Data/Textures/Logo.bmp)
+
 Cirion, un moteur de jeu à défilement latéral utilisant SDL2 et TinyXML-2.
 
 Version 0.3, 06 Décembre 2015
