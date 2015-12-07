@@ -37,8 +37,8 @@
 using namespace std;
 using namespace cirion;
 
-extern char*            gWorkingDir; //!< cf cirion.cpp
-extern SDL_Renderer*    gRenderer;    //!< cf cirion.cpp
+extern char*         gWorkingDir; //!< cf cirion.cpp
+extern SDL_Renderer* gRenderer;   //!< cf cirion.cpp
 
 /* +------------------------------------------------------------------------+
    ! Définition des constructeurs / déstructeurs.                           !
@@ -88,8 +88,8 @@ void cirion::Texture::create( Surface* surface )
     }
 
     // --- Destruction de l'ancienne texture, si elle existe. ------------------
-    if( mTexture != NULL ){
-        
+    if( mTexture != NULL )
+    {
         SDL_DestroyTexture( mTexture );
         mTexture = NULL;
     }
