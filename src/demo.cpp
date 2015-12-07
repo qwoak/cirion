@@ -74,7 +74,6 @@ int main( int argc, char* argv[] )
 
         // Création du logo.
         Graphic* logo = new Graphic();
-        logo->create( (const char*)"logo" );
         logo->setTexture( (const char*)"Logo" );
         logo->setSrc( 0, 0, 137, 56 );
         logo->setPosition( 92, 20 );
