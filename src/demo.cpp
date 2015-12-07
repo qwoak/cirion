@@ -46,7 +46,7 @@ extern vector<Object*>gObjects;
 
 int main( int argc, char* argv[] )
 {
-	// Définition du chemin des ressources.
+    // Définition du chemin des ressources.
     setWorkingDir( (char*)"./Data" );
 
     try
@@ -60,11 +60,11 @@ int main( int argc, char* argv[] )
         // Géneration du champ de bulles.
         for( size_t i = 0; i != 250; i++ )
         {
-            //Bubble* bubble = new Bubble();
-            //bubble->create();
+            Bubble* bubble = new Bubble();
+            bubble->create();
 
             // Envoi de la bulle dans le vecteur d'objets
-            //gObjects.push_back( bubble );
+            gObjects.push_back( bubble );
         }
 
         /**
@@ -73,14 +73,14 @@ int main( int argc, char* argv[] )
          */
 
         // Création du logo.
-        //Graphic* logo = new Graphic();
-        //logo->create( (const char*)"logo" );
-        //logo->setTexture( (const char*)"Logo" );
-        //logo->setSrc( 0, 0, 137, 56 );
-        //ogo->setPosition( 92, 20 );
+        Graphic* logo = new Graphic();
+        logo->create( (const char*)"logo" );
+        logo->setTexture( (const char*)"Logo" );
+        logo->setSrc( 0, 0, 137, 56 );
+        logo->setPosition( 92, 20 );
 
         // Envoi du logo dans le vecteur d'objets.
-        //gObjects.push_back( logo );
+        gObjects.push_back( logo );
 
         /**
         * Le dernier objet envoyé a la priorité d'affichage la plus élevée.
