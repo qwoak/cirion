@@ -50,7 +50,7 @@ using namespace cirion;
 bool             gRunning;             //!< Drapeau de mise en route
 Config           gConfig;              //!< La configuration du moteur
 char*            gWorkingDir;          //!< Chemin des ressources du jeu
-int 			 gTimeStep;            //!< Le délai entre chaque nouvelle image.
+int              gTimeStep;            //!< Le délai entre chaque nouvelle image.
 SDL_Window*      gWindow      = NULL;  //!< Fenêtre SDL2
 SDL_Renderer*    gRenderer    = NULL;  //!< Renderer SDL2
 SDL_Event        gEvent;               //!< Evenements SDL2
@@ -62,12 +62,11 @@ World            gWorld;               //!< Le monde
 //! @throw CiException
 void cirion::init()
 {
-    ostringstream oss;          //!< Un flux de chaîne
+    ostringstream oss;
     int           windowWidth;  //!< La largeur de la fenêtre
     int           windowHeight; //!< La hauteur de la fenêtre
     Uint32        windowFlags;  //!< Les paramètres de la fenêtre
 
-    // --- Repport des informations de version au journal. ---------------------
     oss << "Initializing Cirion Engine v"
         << CIRION_VERSION;
 
@@ -101,7 +100,7 @@ void cirion::init()
         windowFlags  = SDL_WINDOW_HIDDEN;
     }
 
-    // --- Initialisation de SDL2. ---------------------------------------------
+    // --- Initialisation de la lib. SDL2. -------------------------------------
     if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO ) != 0 )
     {
         oss.str("");
@@ -268,7 +267,7 @@ void cirion::quit()
     for( size_t i = 0; i != gTextures.size(); i++ ) { delete gTextures[i]; }
     gTextures.clear();
 
-    /* Liberation des ressources SDL2. */
+    /* Liberations  */
     SDL_DestroyWindow( gWindow );
     SDL_DestroyRenderer( gRenderer );
     SDL_Quit();
