@@ -106,7 +106,7 @@ void cirion::IntroBubble::update( int timeStep )
         setSrc( (int)(mBubbleZ) * 16, 0, 16, 16 );
         // Mise à jour de la position de l'objet.
         setPosition( RENDERER_W / 2 + mBubbleX / mBubbleZ, 
-        	         RENDERER_H / 2 + mBubbleY / mBubbleZ );            
+                     RENDERER_H / 2 + mBubbleY / mBubbleZ );            
     }
 }
 
