@@ -173,27 +173,38 @@ void cirion::Sprite::create( XMLElement* spriteNode )
 //! @brief Procédure de test de collision d'un sprite.
 //! @param *sprite Pointeur vers l'élement à collisionner avec le sprite.
 //! @return Le résultat du test de collision.
-//!		false: le sprite ne collisionne pas.
+//!     false: le sprite ne collisionne pas.
 //!     true : le sprite collisionne.
 bool cirion::Sprite::collide( Sprite* sprite )
 {
-	//! @todo A implémenter.
-    return false;
+    bool xCollide  = mHitbox.x >= sprite->getPosition().x
+                                + sprite->getHitbox().xRelative
+                  && mHitbox.x <= sprite->getPosition().x
+                                + sprite->getHitbox().xRelative 
+                                + sprite->getHitbox().width;
+
+    bool yCollide  = mHitbox.y >= sprite->getPosition().y
+                                + sprite->getHitbox().yRelative
+                  && mHitbox.y <= sprite->getPosition().y
+                                + sprite->getHitbox().yRelative 
+                                + sprite->getHitbox().height;
+
+    return xCollide & yCollide;
 }
 
 //! @brief Procédure de traîtement de l'évenement.
 void cirion::Sprite::handleEvent( SDL_Event* event )
 {
-	//!< Il n'y a pas d'évenements à traiter pour l'objet Sprite.
+    //!< Il n'y a pas d'évenements à traiter pour l'objet Sprite.
 }
 
 //! @brief Procédure de mise à jour du sprite.
 void cirion::Sprite::update( int timeStep )
 {
-	/**
-	 * Il n'y a pas de mises à jour à effectuer pour l'objet Graphic. En
-	 * principe, un Acteur met à jour les sprites qu'il contient.
-	 */
+    /**
+     * Il n'y a pas de mises à jour à effectuer pour l'objet Sprite. En
+     * principe, un Acteur met à jour les sprites qu'il contient.
+     */
 }
 
 //! @brief Procédure de définition de l'animation utilisée par le sprite.
@@ -201,5 +212,5 @@ void cirion::Sprite::update( int timeStep )
 //! @return CiException en cas d'échec.
 void cirion::Sprite::setAnimation( const char* name )
 {
-	//! @todo: A implémenter.
+    //! @todo: A implémenter.
 }
