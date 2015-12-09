@@ -19,43 +19,47 @@
  */
 
 /**
- * @file    ciexception.hpp
- * @version 0.1.1.1
+ * @file    introbubble.hpp
+ * @version 0.2.1.1
  * @author  Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
- * @date    08 Novembre 2015
- * @brief   Exception Cirion.
+ * @date    04 Decembre 2015
+ * @brief   Bulle utilisée dans l'introduction.
  */
 
-#ifndef CIEXEPTION_HPP
-#define CIEXEPTION_HPP
+#ifndef INTROBUBBLE_HPP
+#define INTROBUBBLE_HPP
 
-#include <exception>
-#include <string>
+#include <Cirion/gameobject.hpp>
 
 namespace cirion
 {
-    class CiException : public std::exception
+    class IntroBubble : public GameObject
     {
         public:
         /* +----------------------------------------------------------------+
            ! Déclaration des constructeurs / déstructeurs.                  !
            +----------------------------------------------------------------+ */
-        CiException( const char* whatStr, const char* fromStr ) throw();
-        virtual ~CiException() throw();
-
+        IntroBubble();
+        ~IntroBubble();
         /* +----------------------------------------------------------------+
-           ! Déclaration des accesseurs.                                    !
+           ! Déclaration des méthodes publiques.                            !
            +----------------------------------------------------------------+ */
-        virtual const char* what() const throw();
-        virtual const char* from() const throw();
+        void create();
+        void update( int timeStep = 0 );
+        void handleEvent();
 
         private:
         /* +----------------------------------------------------------------+
-           ! Déclaration des attributs.                                     !
+           ! Déclaration des méthodes privées.                              !
            +----------------------------------------------------------------+ */
-        std::string mWhatStr;
-        std::string mFromStr;
+        void regen( bool randomDepth = false );
+        /* +----------------------------------------------------------------+
+           ! Déclaration des attributs privéss.                             !
+           +----------------------------------------------------------------+ */
+        int mBubbleX;
+        int mBubbleY;
+        float mBubbleZ;
     };
 }
 
-#endif // CIEXEPTION_HPP
+#endif // INTROBUBBLE_HPP

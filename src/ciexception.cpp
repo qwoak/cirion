@@ -21,7 +21,7 @@
 /**
  * @file	ciexception.cpp
  * @version	0.1.1
- * @author  Jérémy S. "Qwoak" <qwoak11@gmail.com>
+ * @author  Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
  * @date	23 Août 2015
  * @brief	Exception Cirion.
  */

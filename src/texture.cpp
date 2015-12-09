@@ -20,15 +20,16 @@
 
 /**
  * @file    texture.cpp
- * @version 0.4
- * @author  Jérémy S. "Qwoak" <qwoak11@gmail.com>
- * @date    08 Novembre 2015
+ * @version 0.5
+ * @author  Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
+ * @date    27 Novembre 2015
  * @brief   Manipulation des textures.
  */
 
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <cstring> // memcpy()
 #include <Cirion/ciexception.hpp>
 #include <Cirion/log.hpp>
 #include <Cirion/surface.hpp>
@@ -38,6 +39,7 @@ using namespace std;
 using namespace cirion;
 
 extern char*         gWorkingDir; //!< cf cirion.cpp
+extern SDL_Window*   gWindow;     //!< cf cirion.cpp
 extern SDL_Renderer* gRenderer;   //!< cf cirion.cpp
 
 /* +------------------------------------------------------------------------+
@@ -47,7 +49,9 @@ extern SDL_Renderer* gRenderer;   //!< cf cirion.cpp
 //! @brief Constructeur pour la classe Texture.
 cirion::Texture::Texture():
     mName   (NULL),
-    mTexture(NULL)
+    mTexture(NULL),
+    mPixels (NULL),
+    mPitch  (0)
 {
 }
 
@@ -70,12 +74,12 @@ cirion::Texture::~Texture()
 }
 
 /* +------------------------------------------------------------------------+
-   ! Définitions des méthodes.                                              !
+   ! Définitions des méthodes publiques.                                    !
    +------------------------------------------------------------------------+ */
 
-//! @brief Procédure de création d'une texture à partir d'une surface.
-//! @param surface La surface source.
-//! @throw CiException
+//! @brief Procédure de création d'une texture.
+//! @param *surface La surface source.
+//! @throw CiException en cas d'échec.
 void cirion::Texture::create( Surface* surface )
 {
     // --- SDL2 est-elle initialisée ? -----------------------------------------
@@ -94,10 +98,13 @@ void cirion::Texture::create( Surface* surface )
         mTexture = NULL;
     }
 
-    // --- Création de la texture à partir de la surface. ----------------------
-    mTexture = SDL_CreateTextureFromSurface( gRenderer,
-                                             surface->getSdl2Surface() );
-    
+    // --- Création d'une texture streamable à partir de la surface. -----------
+    mTexture = SDL_CreateTexture( gRenderer,
+                                  surface->getSdl2Surface()->format->format,
+                                  SDL_TEXTUREACCESS_STREAMING,
+                                  surface->getSdl2Surface()->w,
+                                  surface->getSdl2Surface()->h );
+
     if( mTexture == NULL )
     {
         ostringstream oss;
@@ -108,41 +115,87 @@ void cirion::Texture::create( Surface* surface )
         throw CiException( oss.str().c_str(), __PRETTY_FUNCTION__ );
     }
 
+    // --- Verouillage de la texture pour manipulations. -----------------------
+    try
+    { 
+        lock();
+    }
+
+    catch( CiException const& e )
+    {
+        log( e );
+    }
+
+    // --- Copie des pixels de la surface dans la texture. ---------------------
+    memcpy( mPixels, 
+            surface->getSdl2Surface()->pixels, 
+            surface->getSdl2Surface()->pitch * 
+            surface->getSdl2Surface()->h );
+
+    // --- Application du pixel transparent. -----------------------------------
+
+    /* Le pointeur vers les données des pixels vérouilés en écriture. */
+    Uint32* pixels = (Uint32*)mPixels;
+
+    /* Le nombre de pixels de la texture: c'est le nombre d'octet dans une ligne
+    divisé par le nombre d'octet dans un pixels multiplié par la hauteur de la
+    texture. */
+    size_t pixelCount = mPitch / 4 * this->getHeight();
+
+    /* Le color key corespond à la couleur à remplacer par le pixel
+    transparent. */
+    Uint32 colorKey = SDL_MapRGBA(
+        surface->getSdl2Surface()->format, // Format des pixels de la surface.
+        0x00,                              // Quantité de rouge.
+        0x00,                              // Quantité de vert.
+        0x00,                              // Quantité de bleu.
+        0xFF                               // Quantité alpha.
+    );
+
+    /* Le pixel transparent */
+    Uint32 transparent = SDL_MapRGBA(
+        surface->getSdl2Surface()->format, // Format des pixels de la surface.
+        0x00,                              // Quantité de rouge.
+        0x00,                              // Quantité de vert.
+        0x00,                              // Quantité de bleu.
+        0x00                               // Quantité alpha.
+    );
+
+    // Parcours des pixels de la texture.
+    for( size_t i = 0; i != pixelCount; i++ )
+    {
+        // Si le pixel correspond au color key, ...
+        if( pixels[i] == colorKey )
+        {
+            // ... remplacement du pixel.
+            pixels[i] = transparent;
+        }
+    }
+
+    // --- Déverouillage de la texture. ----------------------------------------
+    unlock();
+    setBlendMode( SDL_BLENDMODE_BLEND );
+
     log( (char*)"New texture created from surface.", __PRETTY_FUNCTION__ );
 }
 
-//! @brief Procédure de création d'une texture à partir d'un bitmap.
-//! @param name Le nom de la texture dans le répertoire des textures.
-//! @throw CiException
+//! @brief Procédure de création d'une texture.
+//! @param Le nom de la texture dans le répertoire des textures.
+//! @throw CiException en cas d'échec.
 void cirion::Texture::create( const char* name )
 {
-    Surface surface; //! La surface crée à partir du fichier.
+    ostringstream filepath; //!< Le chemin du bitmap.
+    Surface       surface;  //!< La surface chargée avec le bitmap.
 
-    // --- SDL2 est-elle initialisée ? -----------------------------------------
-    if ( !(SDL_WasInit(0) & SDL_INIT_VIDEO) )
-    {
-        throw CiException(
-            "Texture creation failed: SDL2 video was not initialized.",
-            __PRETTY_FUNCTION__
-        );
-    }
+    // --- Construction du chemin du bitmap. -----------------------------------
+    filepath << gWorkingDir
+             << "/Textures/"
+             << name
+             << ".bmp";
 
-    // --- Destruction de l'ancienne texture, si elle existe. ------------------
-    if( mTexture != NULL )
-    {
-        SDL_DestroyTexture( mTexture );
-    }
-
-    // --- Création d'une surface depuis un bitmap. ----------------------------
+    // --- Création de la surface à partir du bitmap. --------------------------
     try
     {
-        ostringstream filepath;
-
-        filepath << gWorkingDir
-                 << "/Textures/"
-                 << name
-                 << ".bmp";
-
         surface.create( filepath.str().c_str() );
     }
 
@@ -150,32 +203,82 @@ void cirion::Texture::create( const char* name )
     {
         log( e );
 
-        throw CiException( "Unable to processing texture creation.",
+        throw CiException( "Unable to process texture creation.",
             __PRETTY_FUNCTION__ );
     }
 
-    // --- Création de la texture. ---------------------------------------------
-    mTexture = SDL_CreateTextureFromSurface( gRenderer,
-                                             surface.getSdl2Surface() );
-
-    if( mTexture == NULL )
-    { 
-        ostringstream oss; //!< Un flux de chaîne
-
-        oss << "Texture creation from surface failed: \""
-            << SDL_GetError();
-
-        throw CiException( oss.str().c_str(), __PRETTY_FUNCTION__ );
+    // --- Création de la texture à partir de la surface. ----------------------
+    try
+    {
+        create( &surface );
     }
 
-    setName( name );
+    catch( CiException const& e )
+    {
+        throw e;
+    }
 
-    log( (char*)"New texture created from surface.", __PRETTY_FUNCTION__ );
+    // --- Définition du nom de la texture. ------------------------------------
+    setName( name );
+}
+
+//! @brief Procédure de vérouillage de la texture pour l'accès en écriture.
+//! @throw CiException en cas d'échec.
+void cirion::Texture::lock()
+{
+    if( mPixels != NULL )
+    {
+        ostringstream oss;
+
+        oss << "Texture \""
+            << mName
+            << "\" is already locked !";
+
+        log( oss.str().c_str(), __PRETTY_FUNCTION__ );
+    }
+
+    else
+    {
+        if( SDL_LockTexture( mTexture, NULL, &mPixels, &mPitch ) != 0 )
+        {
+            ostringstream oss;
+
+            oss << "Unable to lock texture \""
+                << mName
+                << "\":"
+                << SDL_GetError();
+
+            throw CiException( oss.str().c_str(), __PRETTY_FUNCTION__ );
+        }
+    }
+}
+
+//! @breif Procédure de dévérouillage de la texture.
+//! @throw CiException en cas d'échec.
+void cirion::Texture::unlock()
+{
+    if( mPixels == NULL )
+    {
+        ostringstream oss;
+
+        oss << "Texture \""
+            << mName
+            << "\" is already unlocked !";
+
+        log( oss.str().c_str(), __PRETTY_FUNCTION__ );
+    }
+
+    else
+    {
+        SDL_UnlockTexture( mTexture );
+        mPixels = NULL;
+        mPitch = 0;
+    }
 }
 
 //! @brief Procédure de définition du mode de simulation de la transparence.
 //! @param mode Le mode de simulation de la transparence.
-//! @throw CiException
+//! @throw CiException en cas d'échec.
 void cirion::Texture::setBlendMode( SDL_BlendMode mode )
 {
     if( SDL_SetTextureBlendMode( mTexture, mode ) != 0 )
@@ -191,7 +294,7 @@ void cirion::Texture::setBlendMode( SDL_BlendMode mode )
 
 //! @brief Procédure d'application de la modulation alpha.
 //! @param alpha Quantité de transparence.
-//! @throw CiException
+//! @throw CiException en cas d'échec.
 void cirion::Texture::setAlphaMod( Uint8 alpha )
 {
     if( SDL_SetTextureAlphaMod( mTexture, alpha ) != 0 )
@@ -209,7 +312,7 @@ void cirion::Texture::setAlphaMod( Uint8 alpha )
 //! @param red Quantité de rouge.
 //! @param green Quantité de vert.
 //! @param blue Quantité de bleu.
-//! @throw CiException
+//! @throw CiException en cas d'échec.
 void cirion::Texture::setRgbMod( Uint8 red, Uint8 green, Uint8 blue )
 {
     if( SDL_SetTextureColorMod( mTexture, red, green, blue ) != 0 )
@@ -221,13 +324,6 @@ void cirion::Texture::setRgbMod( Uint8 red, Uint8 green, Uint8 blue )
 
         throw CiException( oss.str().c_str(), __PRETTY_FUNCTION__ );
     }
-}
-
-//! @brief Procédure d'attribution d'un nom à la texture.
-//! @param name Le nouveau nom de la texture.
-void cirion::Texture::setName( const char* name )
-{
-    mName = (char*)name;
 }
 
 //! @brief Fonction accesseur.
@@ -262,4 +358,29 @@ int cirion::Texture::getHeight()
     
     SDL_QueryTexture( mTexture, NULL, NULL, NULL, &height );
     return height;
+}
+
+//! @brief Fonction accesseur.
+//! @return Pointeur vers les pixels vérouillés de la texture.
+void* cirion::Texture::getPixels()
+{
+    return mPixels; 
+}
+
+//! @brief Fonction accesseur.
+//! @return La longueur en octet d'une rangée de pixels vérouillés.
+int cirion::Texture::getPitch()
+{
+    return mPitch;
+}
+
+/* +------------------------------------------------------------------------+
+   ! Définitions des méthodes privées.                                      !
+   +------------------------------------------------------------------------+ */
+
+//! @brief Procédure d'attribution d'un nom à la texture.
+//! @param name Le nouveau nom de la texture.
+void cirion::Texture::setName( const char* name )
+{
+    mName = (char*)name;
 }

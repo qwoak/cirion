@@ -21,7 +21,7 @@
 /**
  * @file    log.cpp
  * @version 0.1.0.2
- * @author  Jérémy S. "Qwoak" <qwoak11@gmail.com>
+ * @author  Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
  * @date    08 Novembre 2015
  * @brief   Report des messages au journal.
  */

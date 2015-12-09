@@ -21,7 +21,7 @@
 /**
  * @file    xmlerror.hpp
  * @version 0.1
- * @author  Jérémy S. "Qwoak" <qwoak11@gmail.com>
+ * @author  Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
  * @date    11 Août 2015
  * @brief   Description des erreurs TinyXML2.
  */

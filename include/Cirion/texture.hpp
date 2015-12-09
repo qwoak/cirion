@@ -20,9 +20,9 @@
 
 /**
  * @file    texture.hpp
- * @version 0.4
- * @author  Jérémy S. "Qwoak" <qwoak11@gmail.com>
- * @date    08 Novembre 2015
+ * @version 0.5
+ * @author  Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
+ * @date    25 Novembre 2015
  * @brief   Manipulation des textures.
  */
 
@@ -52,6 +52,8 @@ namespace cirion
            +----------------------------------------------------------------+ */
         void create( Surface* surface );
         void create( const char* name );
+        void lock();
+        void unlock();
         void setBlendMode( SDL_BlendMode mode );
         void setAlphaMod( Uint8 a );
         void setRgbMod( Uint8 r, Uint8 g, Uint8 b );
@@ -59,6 +61,8 @@ namespace cirion
         SDL_Texture* getSdl2Texture();
         int getWidth();
         int getHeight();
+        void* getPixels();
+        int getPitch();
 
         private:
         /* +----------------------------------------------------------------+
@@ -68,8 +72,10 @@ namespace cirion
         /* +----------------------------------------------------------------+
            ! Déclaration des attributs.                                     !
            +----------------------------------------------------------------+ */
-        char* mName;           //!< Le nom de la texture.
-        SDL_Texture* mTexture; //!< La structure de texture SDL2;
+        char* mName;           //!< Le nom de la texture
+        SDL_Texture* mTexture; //!< La structure de texture SDL2
+        void* mPixels;         //!< Pointeur vers les pixels vérouillés
+        int mPitch;            //!< Pitch des pixels vérouillés
     };
 }
 

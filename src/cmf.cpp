@@ -21,7 +21,7 @@
 /**
  * @file    cmf.hpp
  * @version 0.1.1.3
- * @author  Jérémy S. "Qwoak" <qwoak11@gmail.com>
+ * @author  Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
  * @date    08 Novembre 2015
  * @brief   Cirion Map Format
  */
@@ -45,13 +45,12 @@ extern char* gWorkingDir; //!< cf cirion.cpp
    +------------------------------------------------------------------------+ */
 
 //! @brief Constructeur pour la classe Cmf.
-cirion::Cmf::Cmf()
+cirion::Cmf::Cmf():
+    mMagic   (0),
+    mChecksum(0),
+    mWidth   (0),
+    mHeight  (0)
 {
-    mMagic      = 0;
-    mChecksum   = 0;
-    mWidth      = 0;
-    mHeight     = 0;
-
     memset( mBackground, 0x00, 16 );
     memset( mTileset,    0x00, 16 );
 }
@@ -126,7 +125,7 @@ unsigned int cirion::Cmf::computeChecksum( fstream* file )
 //! @brief Procédure de chargement d'un fichier CMF.
 //! @param filepath Chemin vers le fichier.
 //! @param test_checksum Indique si il faut vérifier la somme de contrôle.
-//! @throw CiException
+//! @throw CiException en cas d'échec.
 void cirion::Cmf::load( const char* name, bool testChecksum )
 {
     ostringstream   oss;      //!< Un flux de chaîne pour le journal
@@ -248,10 +247,10 @@ void cirion::Cmf::load( const char* name, bool testChecksum )
     file.close();
 }
 
-//! @brief Procédure d'écriture d'un fichier CMF.
+//! @brief Procédure se sauvegarde du fichier CMF.
 //! @param filepath Chemin vers le fichier.
 //! @param test_checksum Indique si il faut écraser le fichier.
-//! @throw CiException
+//! @throw CiException en cas d'échec.
 void cirion::Cmf::save( const char* filepath, bool overwrite )
 {
     fstream file; //!< Un flux de fichier
@@ -299,10 +298,10 @@ void cirion::Cmf::save( const char* filepath, bool overwrite )
     }
 
     // --- Mise à jour de la somme de contrôle. --------------------------------
-    unsigned int computedChecksum = computeChecksum( &file );
+    unsigned int newChecksum = computeChecksum( &file );
 
     file.seekg( 0x04 );
-    file.write( (char*)&computedChecksum, sizeof(int) );
+    file.write( (char*)&newChecksum, sizeof(int) );
 
     // --- Fermeture. ----------------------------------------------------------
     file.close();
@@ -365,7 +364,7 @@ char* cirion::Cmf::getTilesetName()
 //! @brief Fonction accesseur.
 //! @param i Colonne.
 //! @param j Rangée.
-//! @return Donnée de l'index des tuiles à l'emplacement i, j.
+//! @return numéro de la tuile à l'emplacement i, j dans le vecteur des tuiles.
 unsigned char cirion::Cmf::getTile( size_t i, size_t j )
 {
     return mTiles[i][j];

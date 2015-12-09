@@ -1,0 +1,50 @@
+<entity name="mio" type="hiro" spritesheet="EsMio" src_w="32" src_h="32">
+	<animation name="idle">
+		<frame duration="0">
+			<left src_x="0" src_y="0"/>
+			<right src_x="0" src_y="64"/>
+		</frame>
+	</animation>
+
+	<animation name="running">
+		<frame duration="80">
+			<left src_x="0" src_y="0"/>
+			<right src_x="0" src_y="64"/>
+		</frame>
+
+		<frame duration="100">
+			<left src_x="32" src_y="0"/>
+			<right src_x="32" src_y="64"/>
+		</frame>
+
+		<frame duration="140">
+			<left src_x="64" src_y="0"/>
+			<right src_x="64" src_y="64"/>
+		</frame>
+
+		<frame duration="100">
+			<left src_x="96" src_y="0"/>
+			<right src_x="96" src_y="64"/>
+		</frame>
+
+		<frame duration="80">
+			<left src_x="128" src_y="0"/>
+			<right src_x="128" src_y="64"/>
+		</frame>
+
+		<frame duration="100">
+			<left src_x="160" src_y="0"/>
+			<right src_x="160" src_y="64"/>
+		</frame>
+
+		<frame duration="140">
+			<left src_x="192" src_y="0"/>
+			<right src_x="192" src_y="64"/>
+		</frame>
+
+		<frame duration="100">
+			<left src_x="224" src_y="0"/>
+			<right src_x="224" src_y="64"/>
+		</frame>
+	</animation>
+</entity>

@@ -19,43 +19,49 @@
  */
 
 /**
- * @file    ciexception.hpp
+ * @file    entity.hpp
  * @version 0.1.1.1
  * @author  Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
- * @date    08 Novembre 2015
- * @brief   Exception Cirion.
+ * @date    04 Décembre 2015
+ * @brief   Manipulation des entités.
  */
 
-#ifndef CIEXEPTION_HPP
-#define CIEXEPTION_HPP
+#ifndef ENTITY_HPP
+#define ENTITY_HPP
 
-#include <exception>
-#include <string>
+#include <vector>
+#include <tinyxml2.h>
+#include <Cirion/frame.hpp>
+#include <Cirion/gameobject.hpp>
 
 namespace cirion
 {
-    class CiException : public std::exception
+    class Entity : public Object
     {
         public:
         /* +----------------------------------------------------------------+
            ! Déclaration des constructeurs / déstructeurs.                  !
            +----------------------------------------------------------------+ */
-        CiException( const char* whatStr, const char* fromStr ) throw();
-        virtual ~CiException() throw();
-
+        Entity();
+        virtual ~Entity();
         /* +----------------------------------------------------------------+
-           ! Déclaration des accesseurs.                                    !
+           ! Déclaration des méthodes publiques.                            !
            +----------------------------------------------------------------+ */
-        virtual const char* what() const throw();
-        virtual const char* from() const throw();
+        void handleEvent();
+        void update( int timeStep = 0 );
+        const char* getSpritesheetName();
+        std::vector<frame_t> getAnimation( const char* name );
 
-        private:
+        //protected:
         /* +----------------------------------------------------------------+
-           ! Déclaration des attributs.                                     !
+           ! Déclaration des méthodes protégés.                             !
            +----------------------------------------------------------------+ */
-        std::string mWhatStr;
-        std::string mFromStr;
+        void load( const char* name );
+        /* +----------------------------------------------------------------+
+           ! Déclaration des attributs protégés.                            !
+           +----------------------------------------------------------------+ */
+        tinyxml2::XMLDocument mXml;
     };
 }
 
-#endif // CIEXEPTION_HPP
+#endif // ENTITY_HPP

@@ -18,44 +18,58 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file    ciexception.hpp
- * @version 0.1.1.1
+ /**
+ * @file    object.hpp
+ * @version 0.4.2
  * @author  Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
- * @date    08 Novembre 2015
- * @brief   Exception Cirion.
+ * @date    26 Novembre 2015
+ * @brief   Objet graphique
  */
 
-#ifndef CIEXEPTION_HPP
-#define CIEXEPTION_HPP
+#ifndef GAMEOBJECT_HPP
+#define GAMEOBJECT_HPP
 
-#include <exception>
-#include <string>
+#include <SDL2/SDL.h>
+#include <Cirion/texture.hpp>
 
 namespace cirion
 {
-    class CiException : public std::exception
+    /**
+     * @class Object object.hpp
+     *
+     * Une classe abstraîte pour manipuler des objets.
+     */
+    class GameObject
     {
         public:
         /* +----------------------------------------------------------------+
            ! Déclaration des constructeurs / déstructeurs.                  !
            +----------------------------------------------------------------+ */
-        CiException( const char* whatStr, const char* fromStr ) throw();
-        virtual ~CiException() throw();
-
+        GameObject();
+        virtual ~GameObject() = 0;
         /* +----------------------------------------------------------------+
-           ! Déclaration des accesseurs.                                    !
+           ! Déclaration des méthodes publiques.                            !
            +----------------------------------------------------------------+ */
-        virtual const char* what() const throw();
-        virtual const char* from() const throw();
+        virtual void handleEvent() = 0;
+        virtual void update( int timeStep = 0 ) = 0;
+        virtual void draw( int xOrigin = 0, int yOrigin = 0 );
+        void setTexture( const char* name );
+        void setSrc( int x, int y, int w, int h );
+        void setPosition( int x, int y );
+        SDL_Rect getSrc();
+        SDL_Rect getDest();
 
-        private:
+        protected:
         /* +----------------------------------------------------------------+
-           ! Déclaration des attributs.                                     !
+           ! Déclaration des attributs protégés.                            !
            +----------------------------------------------------------------+ */
-        std::string mWhatStr;
-        std::string mFromStr;
+        int mX;            //!< Abcisse de la position de l'objet
+        int mY;            //!< Ordonnée de la position de l'objet
+        Uint8 mAlpha;      //!< Quantité alpha pour la modulation.
+        Texture* mTexture; //!< La texture de l'objet
+        SDL_Rect mSrc;     //!< Le repère source pour l'affichage
+        SDL_Rect mDest;    //!< Le repère de destination pour l'affichage
     };
 }
 
-#endif // CIEXEPTION_HPP
+#endif // GAMEOBJECT_HPP

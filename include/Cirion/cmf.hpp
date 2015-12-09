@@ -18,10 +18,10 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
- /**
+/**
  * @file    cmf.hpp
  * @version 0.1.1.2
- * @author  Jérémy S. "Qwoak" <qwoak11@gmail.com>
+ * @author  Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
  * @date    01 Novembre 2015
  * @brief   Cirion Map Format
  */

@@ -4,7 +4,7 @@
 
 Cirion, un moteur de jeu à défilement latéral utilisant SDL2 et TinyXML-2.
 
-Version 0.3, 06 Décembre 2015
+Version 0.3.1, 09 Décembre 2015
 
 par Jérémy S. "Qwoak" < qwoak11 at gmail dot com >
 

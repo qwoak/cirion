@@ -21,7 +21,7 @@
 /**
  * @file    config.cpp
  * @version 0.1
- * @author  Jérémy S. "Qwoak" <qwoak11@gmail.com>
+ * @author  Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
  * @date    11 Août 2015
  * @brief   Gestion de la configuration.
  */
@@ -30,8 +30,8 @@
 #include <sstream>
 #include <string>
 #include <Cirion/ciexception.hpp>
-#include <Cirion/xmlerror.hpp>
 #include <Cirion/config.hpp>
+#include <Cirion/xmlerror.hpp>
 
 using namespace std;
 using namespace tinyxml2;
@@ -63,7 +63,7 @@ cirion::Config::~Config()
 
 //! @brief Procédure de chargement d'un fichier de configuration.
 //! @param filepath Chemin vers le fichier.
-//! @throw CiException
+//! @throw CiException en cas d'échec.
 void cirion::Config::load( string filepath )
 {
     config_t config;
@@ -110,7 +110,7 @@ void cirion::Config::load( string filepath )
 }
 
 //! @brief Procédure de basculement du mode plein-écran.
-//! @param fullscreen Etat.
+//! @param fullscreen Drapeau de plein-écran.
 void cirion::Config::setFullscreen( bool fullscreen )
 {
     mFullscreen = fullscreen;
@@ -136,22 +136,22 @@ void cirion::Config::setFullscreenSize( int width, int height )
 }
 
 //! @brief Procédure de paramètrage de la fréquence de rafraichissement.
-//! @param fps Nombre d'images par secondes.
+//! @param fps Nombre d'images par secondes désirée.
 void cirion::Config::setFramerate( int fps )
 {
     mFramerate = fps <= 0 ? 0 : fps;
 }
 
-//! @brief Accesseur.
+//! @brief Fonction accesseur.
 //! @return Etat de la fenêtre.
 //!     true : Mode plein-écran.
-//!     false: mode fenétré.
+//!     false: Mode fenétré.
 bool cirion::Config::isFullscreen()
 {
     return mFullscreen;
 }
 
-//! @brief Accesseur.
+//! @brief Fonction accesseur.
 //! @return Largeur en pixels de la fenêtre dans le mode fenétré.
 int cirion::Config::getWindowWidth()
 {
@@ -165,21 +165,21 @@ int cirion::Config::getWindowHeight()
     return mWindowHeight;
 }
 
-//! @brief Accesseur.
+//! @brief Fonction accesseur.
 //! @return Largeur en pixels de la fenêtre dans le mode plen-écran.
 int cirion::Config::getFullscreenWidth()
 {
     return mFullscreenWidth;
 }
 
-//! @brief Accesseur.
+//! @brief Fonction accesseur.
 //! @return Heuteur en pixels de la fenêtre dans le mode plen-écran.
 int cirion::Config::getFullscreenHeight()
 {
     return mFullscreenHeight;
 }
 
-//! @brief Accesseur.
+//! @brief Fonction accesseur.
 //! @return Taux de rafraichissement en nombre d'images par seconde.
 int cirion::Config::getFramerate()
 {

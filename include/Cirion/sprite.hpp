@@ -18,65 +18,94 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-/**
- * @file    surface.hpp
- * @version 0.2.1
+ /**
+ * @file    sprite.hpp
+ * @version 0.1
  * @author  Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
- * @date    28 Novembre 2015
- * @brief   Manipulation des surfaces.
+ * @date    04 Decembre 2015
+ * @brief   Manipulation des sprites.
  */
 
-#ifndef SURFACE_HPP
-#define SURFACE_HPP
+#ifndef SPRITE_HPP
+#define SPRITE_HPP
 
-// Définition du masque RGBA
-#if SDL_BYTEORDER == SDL_BIG_ENDIAN
-    #define R_MASK 0xff000000
-    #define G_MASK 0x00ff0000
-    #define B_MASK 0x0000ff00
-    #define A_MASK 0x000000ff
-#else
-    #define R_MASK 0x000000ff
-    #define G_MASK 0x0000ff00
-    #define B_MASK 0x00ff0000
-    #define A_MASK 0xff000000
-#endif
-
+#include <vector>
 #include <SDL2/SDL.h>
+#include <tinyxml2.h>
+#include <Cirion/gameobject.hpp>
 
 namespace cirion
 {
     /**
-     * @class Surface surface.hpp
-     *
-     * Une classe pour manipuler les surfaces.
+     * Une structure pour représenter un fragment dans un spritesheet.
      */
-    class Surface
+    typedef struct
     {
+        int srcX;
+        int srcY;
+    } Piece;
+
+    /**
+     * Une structure pour représenter la Hitbox d'un sprite.
+     */
+    typedef struct
+    {
+        int xRelative;
+        int yRelative;
+        int width;
+        int height;
+    } Hitbox;
+
+    /**
+     * Une structure pour représenter une image dans une animation.
+     */
+    typedef struct
+    {
+        Piece left;
+        Piece right;
+        int duration;
+    } Frame;
+
+    /**
+     * Une structure pour représenter une animation d'un sprite.
+     */
+    typedef struct
+    {
+        const char* name;
+        std::vector<Frame> frames;
+    } Animation;
+
+    /**
+     * @class Sprite sprite.hpp
+     *
+     * Une classe derivée pour manipuler des sprites.
+     */
+    class Sprite : public GameObject {
         public:
         /* +----------------------------------------------------------------+
            ! Déclaration des constructeurs / déstructeurs.                  !
            +----------------------------------------------------------------+ */
-        Surface();
-        ~Surface();
+        Sprite();
+        ~Sprite();
         /* +----------------------------------------------------------------+
            ! Déclaration des méthodes publiques.                            !
            +----------------------------------------------------------------+ */
-        void create( int width, int height );
-        void create( const char* filepath );
-        void setBlendMode( SDL_BlendMode mode );
-        void setAlphaMod( Uint8 alpha );
-        void setRgbMod( Uint8 red, Uint8 green, Uint8 blue );
-        SDL_Surface* getSdl2Surface();
-        int getWidth();
-        int getHeight();
+        void create( tinyxml2::XMLElement* spriteNode );
+        bool collide( Sprite* sprite );
+        void handleEvent( SDL_Event* event );
+        void update( int timeStep = 0 );
+        void setAnimation( const char* name );
 
         private:
         /* +----------------------------------------------------------------+
            ! Déclaration des attributs privés.                              !
            +----------------------------------------------------------------+ */
-        SDL_Surface* mSurface; //!< La structure de surface SDL2
+        int mFrameIndex;
+        std::vector<Animation> mAnimations;
+        Animation* mCurrentAnimation;
+        Hitbox mHitbox;
+        bool mCollidable;
     };
 }
 
-#endif // SURFACE_HPP
+#endif // SPRITE_HPP

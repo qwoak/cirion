@@ -1,6 +1,6 @@
 # Cirion Makefile: Windows
-# le 09 Novembre 2015
-# par Jérémy S. "Qwoak" <qwoak11@gmail.com>
+# le 09 Décembre 2015
+# par Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
 
 ifeq ($(PWD),)
     $(error This makefile is designed to be run under emulated environment.)
@@ -37,15 +37,16 @@ endif
 
 # Définition de la liste des objets à construire.
 OBJS = \
-	bubble.cpp.o \
 	ciexception.cpp.o \
 	cirion.cpp.o \
 	cmf.cpp.o \
 	config.cpp.o \
 	demo.cpp.o \
+	gameobject.cpp.o \
 	graphic.cpp.o \
+	introbubble.cpp.o \
 	log.cpp.o \
-	object.cpp.o \
+	sprite.cpp.o \
 	surface.cpp.o \
 	texture.cpp.o \
 	timer.cpp.o \

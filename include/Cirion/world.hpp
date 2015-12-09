@@ -20,21 +20,21 @@
 
  /**
  * @file    world.hpp
- * @version 0.4
- * @author  Jérémy S. "Qwoak" <qwoak11@gmail.com>
+ * @version 0.4.0.1
+ * @author  Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
  * @date    08 Novembre 2015
  * @brief   Le monde.
  */
 
 #ifndef WORLD_HPP
 #define WORLD_HPP
-#define TILE_WIDTH  16
-#define TILE_HEIGHT 16
+#define TILE_W 16
+#define TILE_H 16
 
 #include <fstream>
 #include <vector>
 #include <Cirion/cmf.hpp>
-#include <Cirion/object.hpp>
+#include <Cirion/gameobject.hpp>
 #include <Cirion/surface.hpp>
 #include <Cirion/texture.hpp>
 
@@ -71,16 +71,16 @@ namespace cirion
         /* +------------------------------------------------------------+
            ! Déclaration des attributs privés.                          !
            +------------------------------------------------------------+ */
-        int mWorldX;                   //!< Position du monde en abscisse
-        int mWorldY;                   //!< Position du monde en ordonnée
-        Cmf mMap;                      //!< Les données de la map
-        Texture mTileset;              //!< Le tileset
-        Texture mBackground;           //!< Le background
-        SDL_Rect mTileSrc;             //!< Source de la tuile
-        SDL_Rect mTileDest;            //!< Destination de la tuile
-        SDL_Rect mBackgroundSrc;       //!< Source du background
-        SDL_Rect mBackgroundDest;      //!< Destination du background
-        std::vector<Object*> mObjects; //!< Vecteur d'objets du monde
+        int mWorldX;                       //!< Position du monde en abscisse
+        int mWorldY;                       //!< Position du monde en ordonnée
+        Cmf mMap;                          //!< Les données de la map
+        Texture mTileset;                  //!< Le tileset
+        Texture mBackground;               //!< Le background
+        SDL_Rect mTileSrc;                 //!< Source de la tuile
+        SDL_Rect mTileDest;                //!< Destination de la tuile
+        SDL_Rect mBackgroundSrc;           //!< Source du background
+        SDL_Rect mBackgroundDest;          //!< Destination du background
+        std::vector<GameObject*> mObjects; //!< Vecteur d'objets du monde
     };
 }
 

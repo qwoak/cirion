@@ -20,25 +20,21 @@
 
 /**
  * @file    cirion.hpp
- * @version 0.2
- * @author  Jérémy S. "Qwoak" <qwoak11@gmail.com>
- * @date    08 Novembre 2015
+ * @version 0.2.1.2
+ * @author  Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
+ * @date    04 Decembre 2015
  * @brief   Cirion Engine.
  */
 
 #ifndef CIRION_HPP
 #define CIRION_HPP
-#define CIRION_VERSION  (const char*)"0.3" // major.minor[.build[.revision]]
-#define RENDERER_WIDTH  320
-#define RENDERER_HEIGHT 240
-
-#include <Cirion/object.hpp>
-#include <Cirion/texture.hpp>
+#define CIRION_VER  (const char*)"0.3.1" // major.minor[.build[.revision]]
+#define RENDERER_W  320
+#define RENDERER_H  240
 
 namespace cirion
 {
     void init();
-    void setWorkingDir( char* path );
     void handleEvents();
     void update();
     void render();

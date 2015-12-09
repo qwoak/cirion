@@ -21,7 +21,7 @@
 /**
  * @file    timer.hpp
  * @version 1.0
- * @author  Jérémy S. "Qwoak" <qwoak11@gmail.com>
+ * @author  Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
  * @date    22 Août 2015
  * @brief   Minuterie
  */
