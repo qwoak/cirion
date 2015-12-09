@@ -19,7 +19,7 @@
  */
 
  /**
- * @file    bubble.cpp
+ * @file    introbubble.cpp
  * @version 0.3
  * @author  Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
  * @date    25 Novembre 2015
@@ -118,7 +118,7 @@ void cirion::IntroBubble::update( int timeStep )
 //! @param randomDepth Indique le calcul d'une nouvelle profondeur aléatoire.
 void cirion::IntroBubble::regen( bool randomDepth )
 {
-	if( randomDepth )
+    if( randomDepth )
     {
         // Nouvelle profondeur aléatoire ( 8.0 <= mBubbleZ < 16.0 ).
         mBubbleZ = (float)(rand() % 80 ) / 10 + 8;
