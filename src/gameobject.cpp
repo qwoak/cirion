@@ -20,9 +20,9 @@
 
 /**
  * @file    gameobject.cpp
- * @version 0.4.1.2
+ * @version 0.4.2
  * @author  Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
- * @date    04 Décembre 2015
+ * @date    11 Décembre 2015
  * @brief   Manipulation des objets.
  */
 
@@ -47,19 +47,19 @@ extern vector<Texture*> gTextures; //!< cf cirion.cpp
 
 //! @brief Constructeur pour la classe GameObject.
 cirion::GameObject::GameObject():
-    mX      (0),
-    mY      (0),
     mAlpha  (255),
     mTexture(NULL)
 {
-    mSrc.x  = 0;
-    mSrc.y  = 0;
-    mSrc.w  = 0;
-    mSrc.h  = 0;
-    mDest.x = 0;
-    mDest.y = 0;
-    mDest.w = 0;
-    mDest.h = 0;
+    mPosition.x = 0;
+    mPosition.y = 0;
+    mSrc.x      = 0;
+    mSrc.y      = 0;
+    mSrc.w      = 0;
+    mSrc.h      = 0;
+    mDest.x     = 0;
+    mDest.y     = 0;
+    mDest.w     = 0;
+    mDest.h     = 0;
 }
 
 //! @brief Déstructeur pour la classe GameObject.
@@ -77,8 +77,8 @@ cirion::GameObject::~GameObject()
 void cirion::GameObject::draw( int xOrigin, int yOrigin )
 {
     // Calcul des coordonnées d'affichage.
-    mDest.x = mX - xOrigin;
-    mDest.y = mY - yOrigin;
+    mDest.x = mPosition.x - xOrigin;
+    mDest.y = mPosition.y - yOrigin;
 
     if( mTexture != NULL )
     {
@@ -170,8 +170,8 @@ void cirion::GameObject::setSrc( int x, int y, int w, int h )
 //! @param y Ordonnée du repère en pixels.
 void cirion::GameObject::setPosition( int x, int y )
 {
-    mX = x;
-    mY = y;
+    mPosition.x = x;
+    mPosition.y = y;
 }
 
 //! @brief Fonction accesseur.
@@ -186,4 +186,11 @@ SDL_Rect cirion::GameObject::getSrc()
 SDL_Rect cirion::GameObject::getDest()
 {
     return mDest;
+}
+
+// @brief Fonction accesseur.
+// @return La position de l'objet.
+Point cirion::GameObject::getPosition()
+{
+    return mPosition;
 }
