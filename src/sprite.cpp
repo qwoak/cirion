@@ -177,17 +177,17 @@ void cirion::Sprite::create( XMLElement* spriteNode )
 //!     true : le sprite collisionne.
 bool cirion::Sprite::collide( Sprite* sprite )
 {
-    bool xCollide  = mHitbox.x >= sprite->getPosition().x
-                                + sprite->getHitbox().xRelative
-                  && mHitbox.x <= sprite->getPosition().x
-                                + sprite->getHitbox().xRelative 
-                                + sprite->getHitbox().width;
+    bool xCollide  = sprite->getPosition().x >= sprite->getPosition().x
+                                              + sprite->getHitbox().xRelative
+                  && sprite->getPosition().x <= sprite->getPosition().x
+                                              + sprite->getHitbox().xRelative 
+                                              + sprite->getHitbox().width;
 
-    bool yCollide  = mHitbox.y >= sprite->getPosition().y
-                                + sprite->getHitbox().yRelative
-                  && mHitbox.y <= sprite->getPosition().y
-                                + sprite->getHitbox().yRelative 
-                                + sprite->getHitbox().height;
+    bool yCollide  = sprite->getPosition().y >= sprite->getPosition().y
+                                              + sprite->getHitbox().yRelative
+                  && sprite->getPosition().y <= sprite->getPosition().y
+                                              + sprite->getHitbox().yRelative 
+                                              + sprite->getHitbox().height;
 
     return xCollide & yCollide;
 }
@@ -213,4 +213,11 @@ void cirion::Sprite::update( int timeStep )
 void cirion::Sprite::setAnimation( const char* name )
 {
     //! @todo: A implémenter.
+}
+
+//! @brief Fonction accesseur.
+//! @return La hitbox du sprite.
+Hitbox cirion::Sprite::getHitbox()
+{
+    return mHitbox;
 }
