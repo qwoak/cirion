@@ -20,7 +20,7 @@
 
  /**
  * @file    object.hpp
- * @version 0.4.2
+ * @version 0.4.2.1
  * @author  Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
  * @date    26 Novembre 2015
  * @brief   Objet graphique
@@ -30,6 +30,7 @@
 #define GAMEOBJECT_HPP
 
 #include <SDL2/SDL.h>
+#include <Cirion/point.hpp>
 #include <Cirion/texture.hpp>
 
 namespace cirion
@@ -58,13 +59,13 @@ namespace cirion
         void setPosition( int x, int y );
         SDL_Rect getSrc();
         SDL_Rect getDest();
+        Point getPosition();
 
         protected:
         /* +----------------------------------------------------------------+
            ! Déclaration des attributs protégés.                            !
            +----------------------------------------------------------------+ */
-        int mX;            //!< Abcisse de la position de l'objet
-        int mY;            //!< Ordonnée de la position de l'objet
+        Point mPosition;   //!< Position de l'objet.
         Uint8 mAlpha;      //!< Quantité alpha pour la modulation.
         Texture* mTexture; //!< La texture de l'objet
         SDL_Rect mSrc;     //!< Le repère source pour l'affichage
