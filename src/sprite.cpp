@@ -32,6 +32,7 @@
 #include <Cirion/gameobject.hpp>
 #include <Cirion/sprite.hpp>
 
+using namespace cirion;
 using namespace std;
 using namespace tinyxml2;
 

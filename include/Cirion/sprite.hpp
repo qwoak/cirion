@@ -20,9 +20,9 @@
 
  /**
  * @file    sprite.hpp
- * @version 0.1
+ * @version 0.1.1
  * @author  Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
- * @date    04 Decembre 2015
+ * @date    11 Decembre 2015
  * @brief   Manipulation des sprites.
  */
 
@@ -95,6 +95,7 @@ namespace cirion
         void handleEvent( SDL_Event* event );
         void update( int timeStep = 0 );
         void setAnimation( const char* name );
+        Hitbox getHitbox();
 
         private:
         /* +----------------------------------------------------------------+
