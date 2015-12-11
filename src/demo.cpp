@@ -20,34 +20,34 @@
 
 /**
  * @file    demo.cpp
- * @version 0.3.0.1
+ * @version 0.3.0.2
  * @author  Jérémy S. "Qwoak" <qwoak11@gmail.com>
- * @date    08 Novembre 2015
+ * @date    10 Novembre 2015
  * @brief   Demo.
  */
 
 #include <iostream>
 #include <sstream>
 #include <vector>
-#include <Cirion/bubble.hpp>
 #include <Cirion/ciexception.hpp>
-#include <Cirion/cirion.hpp>    
+#include <Cirion/cirion.hpp>
+#include <Cirion/gameobject.hpp>
 #include <Cirion/graphic.hpp>
+#include <Cirion/introbubble.hpp>
 #include <Cirion/log.hpp>
-#include <Cirion/object.hpp>
 #include <Cirion/world.hpp>
 
 using namespace std;
 using namespace cirion;
 
-extern World gWorld;      //!< cf. cirion.cpp
-extern char* gWorkingDir; //!< cf. cirion.cpp
-extern vector<Object*>gObjects;
+extern World               gWorld;      //!< cf. cirion.cpp
+extern char*               gWorkingDir; //!< cf. cirion.cpp
+extern vector<GameObject*> gObjects;
 
 int main( int argc, char* argv[] )
 {
     // Définition du chemin des ressources.
-    setWorkingDir( (char*)"./Data" );
+    gWorkingDir = (char*)"./Data";
 
     try
     {
@@ -55,12 +55,12 @@ int main( int argc, char* argv[] )
         init();
 
         // Creation du monde à partir du cmf.
-        gWorld.create( (const char*)"Default" );
+        //gWorld.create( (const char*)"Default" );
 
         // Géneration du champ de bulles.
         for( size_t i = 0; i != 250; i++ )
         {
-            Bubble* bubble = new Bubble();
+            IntroBubble* bubble = new IntroBubble();
             bubble->create();
 
             // Envoi de la bulle dans le vecteur d'objets
