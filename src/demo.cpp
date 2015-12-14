@@ -20,9 +20,9 @@
 
 /**
  * @file    demo.cpp
- * @version 0.3.0.2
+ * @version 0.3.0.3
  * @author  Jérémy S. "Qwoak" <qwoak11@gmail.com>
- * @date    10 Novembre 2015
+ * @date    14 Novembre 2015
  * @brief   Demo.
  */
 
@@ -74,7 +74,7 @@ int main( int argc, char* argv[] )
 
         // Création du logo.
         Graphic* logo = new Graphic();
-        logo->setTexture( (const char*)"Logo" );
+        logo->setTexture( (const char*)"TexLogo" );
         logo->setSrc( 0, 0, 137, 56 );
         logo->setPosition( 92, 20 );
 
