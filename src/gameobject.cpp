@@ -20,9 +20,9 @@
 
 /**
  * @file    gameobject.cpp
- * @version 0.4.2
- * @author  Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
- * @date    11 Décembre 2015
+ * @version 0.4.3.1
+ * @author  Jérémy S. "Qwoak"
+ * @date    13 Janvier 2016
  * @brief   Manipulation des objets.
  */
 
@@ -30,36 +30,28 @@
 #include <sstream>
 #include <vector>
 #include <Cirion/ciexception.hpp>
-#include <Cirion/cirion.hpp> //!< RENDERER_W et RENDERER_H
+#include <Cirion/cirion.hpp>
 #include <Cirion/gameobject.hpp>
 #include <Cirion/log.hpp>
+#include <Cirion/point2.hpp>
 #include <Cirion/texture.hpp>
 
-using namespace std;
 using namespace cirion;
-
-extern SDL_Renderer*    gRenderer; //!< cf cirion.cpp
-extern vector<Texture*> gTextures; //!< cf cirion.cpp
-
-/* +------------------------------------------------------------------------+
-   ! Définition des constructeurs / déstructeurs.                           !
-   +------------------------------------------------------------------------+ */
+using namespace std;
 
 //! @brief Constructeur pour la classe GameObject.
 cirion::GameObject::GameObject():
-    mAlpha  (255),
-    mTexture(NULL)
+    mPosition( Point2f( 0, 0 ) ),
+    mTexture ( NULL )
 {
-    mPosition.x = 0;
-    mPosition.y = 0;
-    mSrc.x      = 0;
-    mSrc.y      = 0;
-    mSrc.w      = 0;
-    mSrc.h      = 0;
-    mDest.x     = 0;
-    mDest.y     = 0;
-    mDest.w     = 0;
-    mDest.h     = 0;
+    mSrc.x  = 0;
+    mSrc.y  = 0;
+    mSrc.w  = 0;
+    mSrc.h  = 0;
+    mDest.x = 0;
+    mDest.y = 0;
+    mDest.w = 0;
+    mDest.h = 0;
 }
 
 //! @brief Déstructeur pour la classe GameObject.
@@ -67,30 +59,26 @@ cirion::GameObject::~GameObject()
 {
 }
 
-/* +------------------------------------------------------------------------+
-   ! Définition des méthodes publiques                                      !
-   +------------------------------------------------------------------------+ */
-
 //! @brief Procédure de dessin de l'objet.
 //! @param xOrigin Abscisse de l'origine du repère.
 //! @param yOrigin Ordonnée de l'origine du repère.
-void cirion::GameObject::draw( int xOrigin, int yOrigin )
+void cirion::GameObject::draw( const Point2f& origin )
 {
     // Calcul des coordonnées d'affichage.
-    mDest.x = mPosition.x - xOrigin;
-    mDest.y = mPosition.y - yOrigin;
+    mDest.x = (int)( mPosition.mX - origin.mX );
+    mDest.y = (int)( mPosition.mY - origin.mY );
 
     if( mTexture != NULL )
     {
         // L'objet est-il visible ?
-        if(    mDest.x < RENDERER_W
-            && mDest.y < RENDERER_H )
+        if(    mDest.x < gRendererWidth
+            && mDest.y < gRendererHeight )
         {
             if(    mDest.x + mDest.w > 0
                 && mDest.y + mDest.h > 0 )
             {
                 // Modulation alpha.
-                mTexture->setAlphaMod( mAlpha );
+                //mTexture->setAlphaMod( mAlpha );
 
                 // Copie de la texture dans le renderer.
                 SDL_RenderCopy( gRenderer,
@@ -116,9 +104,9 @@ void cirion::GameObject::setTexture( const char* name )
         // Si la texture demandée existe déjà dans le vecteur des textures :
         if( strcmp( gTextures[i]->getName(), name) == 0 )
         {
-            exists   = true;         // Report de l'existence de la texture.
-            mTexture = gTextures[i]; // Association de la texture à l'objet.
-            break;                   // Arrêt de la recherche.
+            exists   = true;
+            mTexture = gTextures[i];
+            break;
         }
     }
 
@@ -150,7 +138,7 @@ void cirion::GameObject::setTexture( const char* name )
     }
 }
 
-//! @brief Procédure de féfinition du repère source.
+//! @brief Procédure de définition du repère source.
 //! @param x Abcisse de l'origine en pixels.
 //! @param y Ordonnée de l'origine en pixels.
 //! @param w Largeur du repère en pixels.
@@ -168,10 +156,9 @@ void cirion::GameObject::setSrc( int x, int y, int w, int h )
 //! @brief Procédure de définition de la position de l'objet.
 //! @param x Abcisse du repère en pixels.
 //! @param y Ordonnée du repère en pixels.
-void cirion::GameObject::setPosition( int x, int y )
+void cirion::GameObject::setPosition( const Point2f& point )
 {
-    mPosition.x = x;
-    mPosition.y = y;
+    mPosition = point;
 }
 
 //! @brief Fonction accesseur.
@@ -190,7 +177,7 @@ SDL_Rect cirion::GameObject::getDest()
 
 // @brief Fonction accesseur.
 // @return La position de l'objet.
-Point cirion::GameObject::getPosition()
+Point2f cirion::GameObject::getPosition()
 {
     return mPosition;
 }

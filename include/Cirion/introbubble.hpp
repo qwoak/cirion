@@ -20,9 +20,9 @@
 
 /**
  * @file    introbubble.hpp
- * @version 0.2.1.1
- * @author  Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
- * @date    04 Decembre 2015
+ * @version 0.2.3
+ * @author  Jérémy S. "Qwoak"
+ * @date    01 Janvier 2016
  * @brief   Bulle utilisée dans l'introduction.
  */
 
@@ -30,6 +30,7 @@
 #define INTROBUBBLE_HPP
 
 #include <Cirion/gameobject.hpp>
+#include <Cirion/point3.hpp>
 
 namespace cirion
 {
@@ -46,7 +47,7 @@ namespace cirion
            +----------------------------------------------------------------+ */
         void create();
         void update( int timeStep = 0 );
-        void handleEvent();
+        void handleEvent( SDL_Event* event = NULL );
 
         private:
         /* +----------------------------------------------------------------+
@@ -56,9 +57,7 @@ namespace cirion
         /* +----------------------------------------------------------------+
            ! Déclaration des attributs privéss.                             !
            +----------------------------------------------------------------+ */
-        int mBubbleX;
-        int mBubbleY;
-        float mBubbleZ;
+        Point3f mBubblePosition;
     };
 }
 

@@ -20,10 +20,10 @@
 
 /**
  * @file    cmf.hpp
- * @version 0.1.1.2
- * @author  Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
- * @date    01 Novembre 2015
- * @brief   Cirion Map Format
+ * @version 0.1.1.3
+ * @author  Jérémy S. "Qwoak" 
+ * @date    13 Janvier 2016
+ * @brief   Crimson Map Format
  */
 
 #ifndef CMF_HPP
@@ -37,46 +37,42 @@ namespace cirion
     /**
      * @class Cmf cmf.hpp
      *
-     * Une classe pour manipuler le format de fichier de map Cirion.
+     * Une classe pour manipuler le format de fichier de map Crimson.
      */
     class Cmf
     {
-        public:
-        /* +------------------------------------------------------------+
-           ! Déclaration des constructeurs / déstructeurs.              !
-           +------------------------------------------------------------+ */
+    public:
         Cmf();
         ~Cmf();
-        /* +------------------------------------------------------------+
-           ! Déclaration des méthodes publiques.                        !
-           +------------------------------------------------------------+ */
         void load( const char* name, bool testChecksum = true );
-        void save( const char* filepath, bool overwrite = false );
+        void write( const char* filepath, bool overwrite = false );
         void clear();
         void setTile( int x, int y, unsigned char data );
-        void setWidth( size_t width );
-        void setHeight( size_t height );
+        void setWidth( int width );
+        void setHeight( int height );
         char* getBackgroundName();
         char* getTilesetName();
-        unsigned char getTile( size_t i, size_t j );
-        size_t getWidth();
-        size_t getHeight();
+        unsigned char getTile( int x, int  );
+        int getWidth();
+        int getHeight();
 
-        private:
-        /* +------------------------------------------------------------+
-           ! Déclaration des méthodes privées.                          !
-           +------------------------------------------------------------+ */
+    private:
         unsigned int computeChecksum( std::fstream* stream );
-        /* +------------------------------------------------------------+
-           ! Déclaration des attributs.                                 !
-           +------------------------------------------------------------+ */
-        unsigned int mMagic;    //!< L'octet magique
-        unsigned int mChecksum; //!< Le checksum
-        size_t mWidth;          //!< La largeur de la map en nombre de tuiles
-        size_t mHeight;         //!< La hauteur de la map en nombre de tuiles
-        char mBackground[16];   //!< Le nom de la texture de fond
-        char mTileset[16];      //!< Le nom de la texture du tileset
-        std::vector< std::vector<unsigned char> > mTiles; //!< Données.
+
+        /** L'octet magique */
+        unsigned int mMagic;
+        /** Le checksum */
+        unsigned int mChecksum;
+        /** La largeur de la map, en nombre de tuiles */
+        int mWidth;
+        /** La heuteur de la map, en nombre de tuiles */
+        int mHeight;
+        /** Le nom de la texture du background */
+        char mBackground[16];
+        /** Le nom de la texture du tileset */
+        char mTileset[16];
+        /** Le vecteur de l'index des tuiles */
+        std::vector< std::vector<unsigned char> > mTiles;
     };
 }
 

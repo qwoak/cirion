@@ -20,9 +20,9 @@
 
  /**
  * @file    object.hpp
- * @version 0.4.2.1
- * @author  Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
- * @date    11 Décembre 2015
+ * @version 0.4.3
+ * @author  Jérémy S. "Qwoak"
+ * @date    12 Janvier 2016
  * @brief   Objet graphique
  */
 
@@ -30,8 +30,8 @@
 #define GAMEOBJECT_HPP
 
 #include <SDL2/SDL.h>
-#include <Cirion/point.hpp>
 #include <Cirion/texture.hpp>
+#include <Cirion/point2.hpp>
 
 namespace cirion
 {
@@ -43,33 +43,27 @@ namespace cirion
     class GameObject
     {
         public:
-        /* +----------------------------------------------------------------+
-           ! Déclaration des constructeurs / déstructeurs.                  !
-           +----------------------------------------------------------------+ */
         GameObject();
-        virtual ~GameObject() = 0;
-        /* +----------------------------------------------------------------+
-           ! Déclaration des méthodes publiques.                            !
-           +----------------------------------------------------------------+ */
-        virtual void handleEvent() = 0;
+        virtual ~GameObject();
+        virtual void handleEvent( SDL_Event* event = NULL ) = 0;
         virtual void update( int timeStep = 0 ) = 0;
-        virtual void draw( int xOrigin = 0, int yOrigin = 0 );
+        virtual void draw( const Point2f& origin = Point2f( 0, 0 ) );
         void setTexture( const char* name );
         void setSrc( int x, int y, int w, int h );
-        void setPosition( int x, int y );
+        void setPosition( const Point2f& position );
         SDL_Rect getSrc();
         SDL_Rect getDest();
-        Point getPosition();
+        Point2f getPosition();
 
         protected:
-        /* +----------------------------------------------------------------+
-           ! Déclaration des attributs protégés.                            !
-           +----------------------------------------------------------------+ */
-        Point mPosition;   //!< Position de l'objet
-        Uint8 mAlpha;      //!< Quantité alpha pour la modulation.
-        Texture* mTexture; //!< La texture de l'objet
-        SDL_Rect mSrc;     //!< Le repère source pour l'affichage
-        SDL_Rect mDest;    //!< Le repère de destination pour l'affichage
+        /** La position de l'objet */
+        Point2f mPosition;
+        /** Pointeur vers la texture de l'objet */
+        Texture* mTexture;
+        /** Le repère source, pour l'affichage */
+        SDL_Rect mSrc;
+        /** Le repère de destination, pour l'affichage */
+        SDL_Rect mDest;
     };
 }
 

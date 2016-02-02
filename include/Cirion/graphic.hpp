@@ -20,9 +20,9 @@
 
 /**
  * @file    graphic.hpp
- * @version 0.1.1.1
- * @author  Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
- * @date    04 Decembre 2015
+ * @version 0.1.2
+ * @author  Jérémy S. "Qwoak"
+ * @date    21 Decembre 2015
  * @brief   Element graphique singulier.
  */
 
@@ -33,7 +33,7 @@
 
 namespace cirion
 {
-	class Graphic : public GameObject
+    class Graphic : public GameObject
     {
         public:
         /* +----------------------------------------------------------------+
@@ -44,7 +44,7 @@ namespace cirion
         /* +----------------------------------------------------------------+
            ! Déclaration des méthodes publiques.                            !
            +----------------------------------------------------------------+ */
-        void handleEvent();
+        void handleEvent( SDL_Event* event = NULL );
         void update( int timeStep = 0 );
     };
 }

@@ -20,10 +20,10 @@
 
 /**
  * @file    cmf.hpp
- * @version 0.1.1.3
- * @author  Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
- * @date    08 Novembre 2015
- * @brief   Cirion Map Format
+ * @version 0.1.1.4
+ * @author  Jérémy S. "Qwoak"
+ * @date    13 Janvier 2016
+ * @brief   Crimson Map Format
  */
 
 #include <iostream>
@@ -32,24 +32,19 @@
 #include <fstream>
 #include <sstream>
 #include <Cirion/ciexception.hpp>
+#include <Cirion/cirion.hpp>
 #include <Cirion/cmf.hpp>
 #include <Cirion/log.hpp>
 
 using namespace std;
 using namespace cirion;
 
-extern char* gWorkingDir; //!< cf cirion.cpp
- 
-/* +------------------------------------------------------------------------+
-   ! Définitions des constructeurs / déstructeurs.                          !
-   +------------------------------------------------------------------------+ */
-
 //! @brief Constructeur pour la classe Cmf.
 cirion::Cmf::Cmf():
-    mMagic   (0),
-    mChecksum(0),
-    mWidth   (0),
-    mHeight  (0)
+    mMagic( 0 ),
+    mChecksum( 0 ),
+    mWidth( 0 ),
+    mHeight( 0 )
 {
     memset( mBackground, 0x00, 16 );
     memset( mTileset,    0x00, 16 );
@@ -59,10 +54,6 @@ cirion::Cmf::Cmf():
 cirion::Cmf::~Cmf()
 {
 }
-
-/* +------------------------------------------------------------------------+
-   ! Définitions des méthodes privées.                                      !
-   +------------------------------------------------------------------------+ */
 
 //! @brief Fonction de calcul de la somme de contrôle d'un fichier CMF.
 //! @param file Flux vers le fichier.
@@ -95,9 +86,9 @@ unsigned int cirion::Cmf::computeChecksum( fstream* file )
     while( !file->eof() )
     {
         file->read( (char*)&byte, sizeof(char) );
-        count   ++;
-        sum     += byte;
-        wsum    += byte * count;
+        count++;
+        sum  += byte;
+        wsum += byte * count;
     }
 
     /* On combine ensuite les deux valeurs pour obtenir la somme de contrôle. */
@@ -106,21 +97,17 @@ unsigned int cirion::Cmf::computeChecksum( fstream* file )
 
     #ifdef DEBUG
 
-        ostringstream oss;
+    ostringstream oss;
 
-        oss << "Computed CMF checksum: 0x"
-            << hex << setfill('0') << setw(8) << checksum;
+    oss << "Computed CMF checksum: 0x"
+        << hex << setfill('0') << setw(8) << checksum;
 
-        log( oss.str().c_str(), __PRETTY_FUNCTION__ );
+    log( oss.str().c_str(), __PRETTY_FUNCTION__ );
 
     #endif // DEBUG
 
     return checksum;
 }
-
-/* +------------------------------------------------------------------------+
-   ! Définitions des méthodes publiques.                                    !
-   +------------------------------------------------------------------------+ */
 
 //! @brief Procédure de chargement d'un fichier CMF.
 //! @param filepath Chemin vers le fichier.
@@ -216,7 +203,7 @@ void cirion::Cmf::load( const char* name, bool testChecksum )
     {
         mTiles[i].resize( mWidth );
 
-        for( size_t j = 0; j != mWidth; j++ )
+        for( int j = 0; j != mWidth; j++ )
         {
             file.read( (char*)&buffer, sizeof(char) );
             mTiles[i][j] = buffer;
@@ -225,21 +212,21 @@ void cirion::Cmf::load( const char* name, bool testChecksum )
 
     #ifdef DEBUG
 
-        oss.str("");
+    oss.str("");
 
-        oss << "Width\t\t: "
-            << dec << mWidth << endl
+    oss << "Width\t\t: "
+        << dec << mWidth << endl
 
-            << "Height\t\t: "
-            << dec << mHeight << endl
+        << "Height\t\t: "
+        << dec << mHeight << endl
 
-            << "Background\t: \""
-            << mBackground << "\"" << endl
+        << "Background\t: \""
+        << mBackground << "\"" << endl
 
-            << "Tileset\t\t: \""
-            << mTileset << "\"";
+        << "Tileset\t\t: \""
+        << mTileset << "\"";
 
-        log( oss.str().c_str(), __PRETTY_FUNCTION__ );
+    log( oss.str().c_str(), __PRETTY_FUNCTION__ );
 
     #endif // DEBUG
 
@@ -247,11 +234,11 @@ void cirion::Cmf::load( const char* name, bool testChecksum )
     file.close();
 }
 
-//! @brief Procédure se sauvegarde du fichier CMF.
+//! @brief Procédure de sauvegarde du fichier CMF.
 //! @param filepath Chemin vers le fichier.
 //! @param test_checksum Indique si il faut écraser le fichier.
 //! @throw CiException en cas d'échec.
-void cirion::Cmf::save( const char* filepath, bool overwrite )
+void cirion::Cmf::write( const char* filepath, bool overwrite )
 {
     fstream file; //!< Un flux de fichier
 
@@ -289,9 +276,9 @@ void cirion::Cmf::save( const char* filepath, bool overwrite )
     file.write( mTileset,    16 * sizeof(char) );
 
     // --- Ecriture des entrées des tuiles. ------------------------------------
-    for( size_t i = 0; i != mHeight; i++ )
+    for( int i = 0; i != mHeight; i++ )
     {
-        for( size_t j = 0; j != mWidth; j++ )
+        for( int j = 0; j != mWidth; j++ )
         {
             file.write( (char*)&mTiles[i][j], sizeof(char) );
         }
@@ -329,7 +316,7 @@ void cirion::Cmf::setTile( int x, int y, unsigned char data )
 
 //! @brief Procédure de redimensionnement des vecteurs de données.
 //! @param w Largeur.
-void cirion::Cmf::setWidth( size_t width )
+void cirion::Cmf::setWidth( int width )
 {
     for( size_t i = 0; i != mTiles.size() -1; i++ )
     {
@@ -341,7 +328,7 @@ void cirion::Cmf::setWidth( size_t width )
 
 //! @brief Procédure de redimensionnement des vecteurs de données.
 //! @param h Largeur.
-void cirion::Cmf::setHeight( size_t height )
+void cirion::Cmf::setHeight( int height )
 {
     mTiles.resize( height );
     mHeight = height;
@@ -365,21 +352,21 @@ char* cirion::Cmf::getTilesetName()
 //! @param i Colonne.
 //! @param j Rangée.
 //! @return numéro de la tuile à l'emplacement i, j dans le vecteur des tuiles.
-unsigned char cirion::Cmf::getTile( size_t i, size_t j )
+unsigned char cirion::Cmf::getTile( int i, int j )
 {
     return mTiles[i][j];
 }
 
 //! @brief Fonction accesseur.
 //! @return Largeur de l'index des tuiles.
-size_t cirion::Cmf::getWidth()
+int cirion::Cmf::getWidth()
 {
     return mWidth;
 }
 
 //! @brief Fonction accesseur.
 //! @return Hauteur de l'index des tuiles.
-size_t cirion::Cmf::getHeight()
+int cirion::Cmf::getHeight()
 {
     return mHeight;
 }

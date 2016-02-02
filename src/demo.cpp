@@ -20,9 +20,9 @@
 
 /**
  * @file    demo.cpp
- * @version 0.3.0.3
- * @author  Jérémy S. "Qwoak" <qwoak11@gmail.com>
- * @date    14 Novembre 2015
+ * @version 0.3.1.2
+ * @author  Jérémy S.
+ * @date    02 Février 2016
  * @brief   Demo.
  */
 
@@ -33,16 +33,13 @@
 #include <Cirion/cirion.hpp>
 #include <Cirion/gameobject.hpp>
 #include <Cirion/graphic.hpp>
+#include <Cirion/hiro.hpp>
 #include <Cirion/introbubble.hpp>
 #include <Cirion/log.hpp>
 #include <Cirion/world.hpp>
 
 using namespace std;
 using namespace cirion;
-
-extern World               gWorld;      //!< cf. cirion.cpp
-extern char*               gWorkingDir; //!< cf. cirion.cpp
-extern vector<GameObject*> gObjects;
 
 int main( int argc, char* argv[] )
 {
@@ -51,39 +48,25 @@ int main( int argc, char* argv[] )
 
     try
     {
-    	// Initialisation des libs et du moteur.
+        // Initialisation
         init();
 
-        // Creation du monde à partir du cmf.
-        //gWorld.create( (const char*)"Default" );
+        // Création du monde
+        gWorld.create( (const char*)"0" );
 
-        // Géneration du champ de bulles.
-        for( size_t i = 0; i != 250; i++ )
+        // Géneration du champ de bulles
+        /*for( size_t i = 0; i != 250; i++ )
         {
             IntroBubble* bubble = new IntroBubble();
             bubble->create();
+            gGameObjects.push_back( bubble );
+        }*/
 
-            // Envoi de la bulle dans le vecteur d'objets
-            gObjects.push_back( bubble );
-        }
-
-        /**
-         * @todo Pour l'introduction: Envoyer un event perso pour stopper la
-         * regéneration des bulles après un certain temps.
-         */
-
-        // Création du logo.
-        Graphic* logo = new Graphic();
-        logo->setTexture( (const char*)"TexLogo" );
-        logo->setSrc( 0, 0, 137, 56 );
-        logo->setPosition( 92, 20 );
-
-        // Envoi du logo dans le vecteur d'objets.
-        gObjects.push_back( logo );
-
-        /**
-        * Le dernier objet envoyé a la priorité d'affichage la plus élevée.
-        */
+        // Création du personnage
+        Hiro* hiro = new Hiro();
+        hiro->create( "DummyAlt" );
+        hiro->setPosition( Point2f( 144.0f, 102.0f ) );
+        gGameObjects.push_back( hiro );
     }
 
     catch( CiException const& e )

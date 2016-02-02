@@ -1,6 +1,6 @@
 # Cirion Makefile: Linux
-# le 09 Décembre 2015
-# par Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
+# le 20 Décembre 2015
+# par Jérémy S. "Qwoak"
 
 # --- Configurations. ----------------------------------------------------------
 
@@ -38,8 +38,10 @@ OBJS = \
 	cmf.cpp.o \
 	config.cpp.o \
 	demo.cpp.o \
+	entity.cpp.o \
 	gameobject.cpp.o \
 	graphic.cpp.o \
+	hiro.cpp.o \
 	introbubble.cpp.o \
 	log.cpp.o \
 	sprite.cpp.o \
@@ -52,26 +54,12 @@ OBJS = \
 # --- Définition des recettes. -------------------------------------------------
 
 .PHONY: all
-.PHONY: clean
-.PHONY: setup
 .PHONY: build
 
 all: setup build
 
-setup:
-	mkdir -p $(OBJ) > /dev/null
-	mkdir -p $(BUILD) > /dev/null
-	mkdir -p $(LIB) > /dev/null
-
-clean:
-	rm $(BUILD)/$(OUT) > /dev/null
-	rm $(OBJ)/*.o > /dev/null
-	
 build: $(OBJS)
 	$(CC) -o $(BUILD)/$(OUT) $(wildcard $(OBJ)/*.o) $(LDFLAGS)
 
 %.cpp.o: $(SRC)/%.cpp
 	$(CC) -o $(OBJ)/$@ -c $< $(CCFLAGS)
-
-doc:
-	doxygen Doxyfile

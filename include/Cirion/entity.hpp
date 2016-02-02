@@ -19,26 +19,38 @@
  */
 
 /**
- * @file    point.hpp
- * @version 0.1
- * @author  Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
- * @date    11 Decembre 2015
- * @brief   Représentation du point.
+ * @file    entity.hpp
+ * @version 0.1.2.1
+ * @author  Jérémy S. "Qwoak"
+ * @date    14 Janvier 2016
+ * @brief   Manipulation des entités.
  */
 
-#ifndef POINT_HPP
-#define POINT_HPP
+#ifndef ENTITY_HPP
+#define ENTITY_HPP
+
+#include <tinyxml2.h>
+#include <Cirion/gameobject.hpp>
+#include <Cirion/point2.hpp>
+#include <Cirion/sprite.hpp>
 
 namespace cirion
 {
-    /**
-     * Une structure pour représenter un point.
-     */
-    typedef struct
+    class Entity : public GameObject
     {
-        int x;
-        int y;
-    } Point;
+        public:
+        Entity();
+        virtual ~Entity();
+        void load( const char* entityName );
+        void draw( const Point2f& origin = Point2f( 0.0f, 0.0f ) );
+        tinyxml2::XMLElement* getSpriteNode( const char* spriteName );
+
+        protected:
+        /** Le document XML de l'entité */
+        tinyxml2::XMLDocument mXml;
+        /** Le vecteur de sprites qui composent l'entité */
+        std::vector<Sprite*> mSprites;
+    };
 }
 
-#endif // POINT_HPP
+#endif // ENTITY_HPP

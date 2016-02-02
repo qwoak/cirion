@@ -19,59 +19,52 @@
  */
 
 /**
- * @file    config.hpp
+ * @file    hiro.hpp
  * @version 0.2
  * @author  Jérémy S. "Qwoak"
- * @date    03 Janvier 2016
- * @brief   Gestion de la configuration.
+ * @date    31 Janvier 2016
+ * @brief   Personnage jouable.
  */
 
-#ifndef CONFIG_HPP
-#define CONFIG_HPP
+#ifndef HIRO_HPP
+#define HIRO_HPP
 
-#include <tinyxml2.h>
+#include <Cirion/entity.hpp>
+#include <Cirion/gameobject.hpp>
+#include <Cirion/sprite.hpp>
+
+#define HIRO_XVELOCITY_MAX  0.1f       // Pixels / ms
+#define HIRO_XVELOCITY_STEP 0.0005f   // Pixels / ms
 
 namespace cirion
 {
-    /**
-     * @struct Keymap
-     *
-     * Une structure pour stocker la carte des touches.
-     */
-    typedef struct
-    {
-        int up, down, left, right, jump, fire;
-    } Keymap;
-
-    /**
-     * @class Config config.hpp
-     *
-     * Une classe pour charger, modifier et sauvegarder un fichier de
-     * configuration Cirion au format XML.
-     */
-    class Config
+    class Hiro : public Entity
     {
         public:
         /* +----------------------------------------------------------------+
            ! Déclaration des constructeurs / déstructeurs.                  !
            +----------------------------------------------------------------+ */
-        Config();
+        Hiro();
+        ~Hiro();
         /* +----------------------------------------------------------------+
            ! Déclaration des méthodes publiques.                            !
            +----------------------------------------------------------------+ */
-        void load( const char* filepath );
-        void write( const char* filepath );
-        
+        void create( const char* entityName );
+        void handleEvent( SDL_Event* event = NULL );
+        void update( int timeStep = 0 );
+
+        private:
         /* +----------------------------------------------------------------+
-           ! Déclaration des attributs publiques.                           !
+           ! Déclaration des attributs privés.                              !
            +----------------------------------------------------------------+ */
-        int mWindowWidth;
-        int mWindowHeight;
-        bool mIsFullscreen;
-        bool mIsHwRenderEnabled;
-        bool mIsVsyncEnabled;
-        Keymap mKeyboardMap;
+        float mXVelocity;
+        float mYVelocity;
+        bool mInputLeft;
+        bool mInputRight;
+        bool mStatusGoLeft;
+        bool mStatusGoRight;
+        Sprite* mMainSprite;
     };
 }
 
-#endif // CONFIG_HPP
+#endif // HIRO_HPP

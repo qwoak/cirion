@@ -1,0 +1,45 @@
+<entity type="hiro">
+	<sprite name="main" spritesheet="EsDummy" src_w="32" src_h="32">
+		<hitbox x="5" y="2" w="6" h="14"/>
+		<animation name="standing">
+			<frame duration="0">
+				<left src_x="0" src_y="0"/>
+				<right src_x="0" src_y="128"/>
+			</frame>
+		</animation>
+		<animation name="running">
+			<frame duration="120">
+				<left src_x="32" src_y="0"/>
+				<right src_x="32" src_y="128"/>
+			</frame>
+			<frame duration="140">
+				<left src_x="64" src_y="0"/>
+				<right src_x="64" src_y="128"/>
+			</frame>
+			<frame duration="120">
+				<left src_x="96" src_y="0"/>
+				<right src_x="96" src_y="128"/>
+			</frame>
+			<frame duration="80">
+				<left src_x="128" src_y="0"/>
+				<right src_x="128" src_y="128"/>
+			</frame>
+			<frame duration="120">
+				<left src_x="160" src_y="0"/>
+				<right src_x="160" src_y="128"/>
+			</frame>
+			<frame duration="140">
+				<left src_x="192" src_y="0"/>
+				<right src_x="192" src_y="128"/>
+			</frame>
+			<frame duration="120">
+				<left src_x="224" src_y="0"/>
+				<right src_x="224" src_y="128"/>
+			</frame>
+			<frame duration="80">
+				<left src_x="0" src_y="0"/>
+				<right src_x="0" src_y="128"/>
+			</frame>
+		</animation>
+	</sprite>
+</entity>

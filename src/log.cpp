@@ -22,7 +22,7 @@
  * @file    log.cpp
  * @version 0.1.0.2
  * @author  Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
- * @date    08 Novembre 2015
+ * @date    07 Janvier 2016
  * @brief   Report des messages au journal.
  */
 
@@ -60,7 +60,7 @@ void cirion::log( const char* msg, const char* from )
 
 //! @brief Procédure de report des exceptions au journal.
 //! @param e Exception Cirion
-void cirion::log( CiException e )
+void cirion::log( const CiException& e )
 {
     gCirionLog << "[EXCEPTION from "
                << e.from()

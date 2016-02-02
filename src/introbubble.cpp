@@ -20,29 +20,23 @@
 
  /**
  * @file    introbubble.cpp
- * @version 0.3
- * @author  Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
- * @date    25 Novembre 2015
+ * @version 0.3.3.1
+ * @author  Jérémy S. "Qwoak"
+ * @date    31 Janvier 2016
  * @brief   Bulle utilisée dans l'introduction.
  */
 
-#include <iostream>
 #include <cstdlib> // srand(), rand()
 #include <ctime> // time()
+#include <iostream>
 #include <Cirion/ciexception.hpp>
-#include <Cirion/cirion.hpp> // RENDERER_W, RENDERER_H
+#include <Cirion/cirion.hpp>
 #include <Cirion/introbubble.hpp>
 #include <Cirion/log.hpp>
-
-/* +------------------------------------------------------------------------+
-   ! Définition des constructeurs / déstructeurs.                           !
-   +------------------------------------------------------------------------+ */
+#include <Cirion/point3.hpp>
 
 //! @brief Constructeur pour la classe Bubble.
-cirion::IntroBubble::IntroBubble():
-    mBubbleX( 0 ),
-    mBubbleY( 0 ),
-    mBubbleZ( 0 )
+cirion::IntroBubble::IntroBubble(): mBubblePosition( Point3f(0, 0, 0) )
 {
 }
 
@@ -50,10 +44,6 @@ cirion::IntroBubble::IntroBubble():
 cirion::IntroBubble::~IntroBubble()
 {
 }
-
-/* +------------------------------------------------------------------------+
-   ! Définition des méthodes publiques                                      !
-   +------------------------------------------------------------------------+ */
 
 //! @brief Procédure de création de la bulle.
 //! @throw CiException en cas d'échec.
@@ -71,18 +61,20 @@ void cirion::IntroBubble::create()
             __PRETTY_FUNCTION__ );
     }
 
+    mSrc.w = 16;
+    mSrc.h = 16;
+    mDest.w = mSrc.w;
+    mDest.h = mSrc.h;
+
     // Première génération.
     regen( true );
-
-    // Calcul et définition de la position de l'objet.
-    setPosition( RENDERER_W / 2 + mBubbleX / mBubbleZ, 
-                 RENDERER_H / 2 + mBubbleY / mBubbleZ );
 }
 
 //! @brief Procédure de traîtement de l'évenement.
-void cirion::IntroBubble::handleEvent()
+//! @param event Pointeur vers une structure d'évenements SDL2.
+void cirion::IntroBubble::handleEvent( SDL_Event* event )
 {
-	//!< Il n'y a pas d'évenements à traiter pour l'objet IntroBubble
+    //!< Il n'y a pas d'évenements à traiter pour l'objet IntroBubble
 }
 
 //! @brief Procédure de mise à jour de la bulle.
@@ -90,24 +82,26 @@ void cirion::IntroBubble::handleEvent()
 void cirion::IntroBubble::update( int timeStep )
 {
     // Mise à jour de la profondeur de la bulle.
-    mBubbleZ -= 0.075 * (float)timeStep / 20;
+    mBubblePosition.mZ -= 0.075 * (float)timeStep / 20;
     // Mise à jour de la transparence de la texture.
-    mAlpha    = -mBubbleZ / 8 * 255;
+    //mAlpha = -mBubblePosition.mZ / 8 * 255;
 
-    if( mBubbleZ <= 0 )
+    if( mBubblePosition.mZ <= 0 )
     {
         // Régénération.
         regen();
     }
 
-    if( mBubbleZ <= 8 )
-    {
-        // Mise à jour du repère source de l'objet.
-        setSrc( (int)(mBubbleZ) * 16, 0, 16, 16 );
-        // Mise à jour de la position de l'objet.
-        setPosition( RENDERER_W / 2 + mBubbleX / mBubbleZ, 
-                     RENDERER_H / 2 + mBubbleY / mBubbleZ );            
-    }
+    // Mise à jour du repère source de l'objet.
+    mSrc.x = (int)(mBubblePosition.mZ) * 16;
+    // Mise à jour de la position de l'objet.
+    mPosition.mX = gRendererWidth / 2 
+                 + mBubblePosition.mX / mBubblePosition.mZ
+                 - 8;
+
+    mPosition.mY = gRendererHeight / 2
+                 + mBubblePosition.mY / mBubblePosition.mZ
+                 - 8;
 }
 
 /* +------------------------------------------------------------------------+
@@ -121,16 +115,16 @@ void cirion::IntroBubble::regen( bool randomDepth )
     if( randomDepth )
     {
         // Nouvelle profondeur aléatoire ( 8.0 <= mBubbleZ < 16.0 ).
-        mBubbleZ = (float)(rand() % 80 ) / 10 + 8;
+        mBubblePosition.mZ = (float)( rand() % 80 ) / 10 + 8;
     }
 
     else
     {
         // Reset à la profondeur maximale du champ.
-        mBubbleZ = 8;
+        mBubblePosition.mZ = 8;
     }
     
     // Nouvelle abscisse et ordonnée.
-    mBubbleX = rand() % (8 * RENDERER_W) - (8 * 160);
-    mBubbleY = rand() % (8 * RENDERER_H) - (8 * 120);
+    mBubblePosition.mX = rand() % ( 8 * gRendererWidth  ) - ( 8 * 160 );
+    mBubblePosition.mY = rand() % ( 8 * gRendererHeight ) - ( 8 * 120 );
 }

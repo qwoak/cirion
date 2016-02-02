@@ -20,9 +20,9 @@
 
  /**
  * @file    world.cpp
- * @version 0.2.1.3
- * @author  Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
- * @date    27 Novembre 2015
+ * @version 0.2.2.4
+ * @author  Jérémy S. "Qwoak"
+ * @date    01 Février 2016
  * @brief   Le monde.
  */
 
@@ -30,22 +30,19 @@
 #include <sstream>
 #include <vector>
 #include <Cirion/ciexception.hpp>
-#include <Cirion/cirion.hpp> //!< RENDERER_W et RENDERER_H
+#include <Cirion/cirion.hpp>
 #include <Cirion/log.hpp>
 #include <Cirion/surface.hpp>
-#include <Cirion/world.hpp> //!< TILE_W et TILE_H
+#include <Cirion/world.hpp>
 
 using namespace std;
 using namespace cirion;
 
-extern SDL_Renderer* gRenderer;    //!< cf. cirion.cpp
- 
-/* +------------------------------------------------------------------------+
-   ! Définitions des constructeurs / déstructeurs.                          !
-   +------------------------------------------------------------------------+ */
+const int gTileWidth = 16;
+const int gTileHeight = 16;
 
 //! @brief Constructeur pour la classe World.
-cirion::World::World()
+cirion::World::World() : mPosition( Point2f( 0, 0 ) )
 {
     mBackgroundSrc.x  = 0; mBackgroundSrc.y  = 0;
     mBackgroundSrc.w  = 0; mBackgroundSrc.h  = 0;
@@ -55,17 +52,12 @@ cirion::World::World()
     mTileSrc.w        = 0; mTileSrc.h        = 0;
     mTileDest.x       = 0; mTileDest.y       = 0;
     mTileDest.w       = 0; mTileDest.h       = 0;
-    mWorldX           = 0; mWorldY           = 0;
 }
 
 //! @brief Déstructeur pour la classe World.
 cirion::World::~World()
 {
 }
-
-/* +------------------------------------------------------------------------+
-   ! Définitions des méthodes.                                              !
-   +------------------------------------------------------------------------+ */
 
 //! @brief Procédure de création du monde.
 //! @param filepath Chemin vers un fichier CMF.
@@ -75,11 +67,16 @@ void cirion::World::create( const char* name )
     try
     {
         /* Chargement du fichier CMF. */
-        mMap.load( name );
+        #ifdef DEBUG
+            mCmf.load( name, false );
+        #else
+            mCmf.load( name );
+        #endif
 
         /* Création des ressources. */
-        mTileset.create( mMap.getTilesetName() );
-        mBackground.create( mMap.getBackgroundName() );
+        mTileset.create( mCmf.getTilesetName() );
+        mBackground.create( mCmf.getBackgroundName() );
+        
     }
 
     catch( CiException const& e )
@@ -97,40 +94,42 @@ void cirion::World::create( const char* name )
     mBackgroundDest.h = mBackgroundSrc.h;
 
     /* Init. des dimensions sources et d'affichage d'une tuile. */
-    mTileSrc.w  = TILE_W;
-    mTileSrc.h  = TILE_H;
+    mTileSrc.w  = gTileWidth;
+    mTileSrc.h  = gTileHeight;
     mTileDest.w = mTileSrc.w;
     mTileDest.h = mTileSrc.h;
 }
 
 //! @brief Procédure de gestion d'un évenement pour le monde.
-void cirion::World::handleEvent()
+void cirion::World::handleEvent( SDL_Event* event )
 {
     /* Pacrours de la liste des objets */
     for( size_t i = 0; i != mObjects.size(); i++ )
     {
         /* Gestion de l'évenement pour l'objet. */
-        mObjects[i]->handleEvent();
+        mObjects[i]->handleEvent( event );
     }
 }
 
 //! @brief Procédure de mise à jour du monde.
-void cirion::World::update()
+void cirion::World::update( int timeStep )
 {
     // --- Déplacement vertical. -----------------------------------------------
 
     /* Centrage si hauteur inférieure au renderer. */
-    if( mMap.getHeight() * TILE_H < RENDERER_H )
+    if( mCmf.getHeight() * gTileHeight < gRendererHeight )
     {
-        mWorldY = (int)( mMap.getHeight() * TILE_H - RENDERER_H ) / 2;
+        mPosition.mY = (int)( mCmf.getHeight() * gTileHeight - gRendererHeight ) 
+                     / 2;
     }
 
     // --- Déplacement horizontal. ---------------------------------------------
 
     /* Centrage si largeur inférieure au renderer. */
-    if( mMap.getWidth()  * TILE_W  < RENDERER_W   )
+    if( mCmf.getWidth()  * gTileWidth < gRendererWidth )
     {
-        mWorldX = (int)( mMap.getWidth()  * TILE_W  - RENDERER_W  ) / 2;
+        mPosition.mX = (int)( mCmf.getWidth() * gTileWidth - gRendererWidth  )
+                     / 2;
     }
 
     // --- Mise à jour des objets. ---------------------------------------------
@@ -145,20 +144,23 @@ void cirion::World::update()
 //! @brief Procédure de dessin du background.
 void cirion::World::drawBackground()
 {
+    // Attention: ignoblité visuelle
     if( mBackground.getSdl2Texture() != NULL )
     {
         for( mBackgroundDest.y 
-                = mWorldY > 0
-                ? -mWorldY / 2 % mBackgroundDest.h
-                : -mWorldY / 2 % mBackgroundDest.h - mBackgroundDest.h;
-             mBackgroundDest.y  < RENDERER_H;
+                = mPosition.mY > 0
+                ? -(int)mPosition.mY / 2 % mBackgroundDest.h
+                : -(int)mPosition.mY / 2 % mBackgroundDest.h
+                  - mBackgroundDest.h;
+             mBackgroundDest.y  < gRendererHeight;
              mBackgroundDest.y += mBackgroundDest.h )
         {
             for( mBackgroundDest.x
-                    = mWorldX > 0
-                    ? -mWorldX / 2 % mBackgroundDest.w
-                    : -mWorldX / 2 % mBackgroundDest.w - mBackgroundDest.w;
-                 mBackgroundDest.x  < RENDERER_W;
+                    = mPosition.mX > 0
+                    ? -(int)mPosition.mX / 2 % mBackgroundDest.w
+                    : -(int)mPosition.mX / 2 % mBackgroundDest.w
+                      - mBackgroundDest.w;
+                 mBackgroundDest.x  < gRendererWidth;
                  mBackgroundDest.x += mBackgroundDest.w )
             {
                 /* Copie du background dans le renderer. */
@@ -183,33 +185,33 @@ void cirion::World::drawMap()
     /* --- Calcul des tuiles de départ et de fin pour l'affichage de la map. -*/
 
     /* Si hauteur plus grande que le renderer, clip ... */
-    if( mMap.getHeight() > RENDERER_H / TILE_H )
+    if( mCmf.getHeight() > gRendererHeight / gTileHeight )
     {
-        tileStartY = ( mWorldY ) / TILE_H;
-        tileEndY   = ( mWorldY + ( TILE_H - 1 ) + RENDERER_H ) 
-                   / TILE_H;
+        tileStartY = ( mPosition.mY ) / gTileHeight;
+        tileEndY   = ( mPosition.mY + ( gTileHeight - 1 ) + gRendererHeight )
+                   / gTileHeight;
     }
 
     /* ... Sinon, affichage en entier sur la hauteur */
     else
     {
         tileStartY = 0;
-        tileEndY   = mMap.getHeight();
+        tileEndY   = mCmf.getHeight();
     }
 
     /* Si largeur plus grande que le renderer, clip ... */
-    if( mMap.getWidth() > RENDERER_W / TILE_W )
+    if( mCmf.getWidth() > gRendererWidth / gTileWidth )
     {
-        tileStartX = ( mWorldX ) / TILE_W;
-        tileEndX   = ( mWorldX + ( TILE_W - 1 ) + RENDERER_W )
-                   / TILE_W;
+        tileStartX = ( mPosition.mX ) / gTileWidth;
+        tileEndX   = ( mPosition.mX + ( gTileWidth - 1 ) + gRendererWidth )
+                   / gTileWidth;
     }
 
     /* ... Sinon, affichage en entier sur la largeur */
     else
     {
         tileStartX = 0;
-        tileEndX   = mMap.getWidth();
+        tileEndX   = mCmf.getWidth();
     }
 
     /* --- Dessin de la map. ------------------------------------------------ */
@@ -224,15 +226,15 @@ void cirion::World::drawMap()
                  x        ++ )
             {
                 /* Lecture de l'index. */
-                tile = mMap.getTile( y, x );
+                tile = mCmf.getTile( y, x );
 
                 /* Calcul des coordonnées de la tuile dans le tileset. */
-                mTileSrc.x = ( tile % 16 ) * TILE_W;
-                mTileSrc.y = ( tile / 16 ) * TILE_H;
+                mTileSrc.x = ( tile % 16 ) * gTileWidth;
+                mTileSrc.y = ( tile / 16 ) * gTileHeight;
 
                 /* Positionnement de la tuile pour l'affichage. */
-                mTileDest.x = ( x * TILE_W  ) - mWorldX;
-                mTileDest.y = ( y * TILE_H ) - mWorldY;
+                mTileDest.x = ( x * gTileWidth  ) - mPosition.mX;
+                mTileDest.y = ( y * gTileHeight ) - mPosition.mY;
 
                 /* Copie de la tuile dans le renderer. */
                 SDL_RenderCopy( gRenderer,
@@ -251,7 +253,7 @@ void cirion::World::drawObjects()
     for( size_t i = 0; i != mObjects.size(); i++ )
     {
         /* Dessin de l'objet */
-        mObjects[i]->draw( mWorldX, mWorldY );
+        mObjects[i]->draw( mPosition );
     }
 }
 

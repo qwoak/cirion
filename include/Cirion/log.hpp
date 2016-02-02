@@ -34,7 +34,7 @@
 namespace cirion
 {
     void log( const char* msg, const char* from );
-    void log( CiException e );
+    void log( const CiException& e );
 }
 
 #endif // LOG_HPP

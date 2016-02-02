@@ -20,49 +20,30 @@
 
  /**
  * @file    sprite.hpp
- * @version 0.1.1
- * @author  Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
- * @date    11 Decembre 2015
+ * @version 0.3
+ * @author  Jérémy S. "Qwoak"
+ * @date    24 Janvier 2016
  * @brief   Manipulation des sprites.
  */
 
 #ifndef SPRITE_HPP
 #define SPRITE_HPP
 
-#include <vector>
-#include <SDL2/SDL.h>
 #include <tinyxml2.h>
+#include <vector>
 #include <Cirion/gameobject.hpp>
+#include <Cirion/point2.hpp>
+#include <SDL2/SDL.h>
 
 namespace cirion
 {
-    /**
-     * Une structure pour représenter un fragment dans un spritesheet.
-     */
-    typedef struct
-    {
-        int srcX;
-        int srcY;
-    } Piece;
-
-    /**
-     * Une structure pour représenter la Hitbox d'un sprite.
-     */
-    typedef struct
-    {
-        int xRelative;
-        int yRelative;
-        int width;
-        int height;
-    } Hitbox;
-
     /**
      * Une structure pour représenter une image dans une animation.
      */
     typedef struct
     {
-        Piece left;
-        Piece right;
+        Point2i left;
+        Point2i right;
         int duration;
     } Frame;
 
@@ -80,32 +61,30 @@ namespace cirion
      *
      * Une classe derivée pour manipuler des sprites.
      */
-    class Sprite : public GameObject {
-        public:
-        /* +----------------------------------------------------------------+
-           ! Déclaration des constructeurs / déstructeurs.                  !
-           +----------------------------------------------------------------+ */
+    class Sprite : public GameObject
+    {
+    public:
         Sprite();
         ~Sprite();
-        /* +----------------------------------------------------------------+
-           ! Déclaration des méthodes publiques.                            !
-           +----------------------------------------------------------------+ */
         void create( tinyxml2::XMLElement* spriteNode );
         bool collide( Sprite* sprite );
-        void handleEvent( SDL_Event* event );
+        void handleEvent( SDL_Event* event = NULL );
         void update( int timeStep = 0 );
+        void setRelative( const Point2f& relative );
+        void setFacingRight( bool facingRight );
         void setAnimation( const char* name );
-        Hitbox getHitbox();
-
-        private:
-        /* +----------------------------------------------------------------+
-           ! Déclaration des attributs privés.                              !
-           +----------------------------------------------------------------+ */
-        int mFrameIndex;
-        std::vector<Animation> mAnimations;
-        Animation* mCurrentAnimation;
-        Hitbox mHitbox;
+        Point2f getRelative();
+        SDL_Rect getHitbox();
+        bool isFacingRight();
+    private:
+        Point2f mRelative;
+        SDL_Rect mHitbox;
         bool mCollidable;
+        bool mFacingRight;
+        int mEleapsed;
+        unsigned int mFrameIndex;
+        std::vector<Animation> mAnimations;
+        Animation* mAnimation;
     };
 }
 

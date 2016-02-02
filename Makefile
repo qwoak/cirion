@@ -1,5 +1,5 @@
 # Cirion Makefile
-# le 26 Octobre 2015
+# le 19 Décembre 2015
 # par Jérémy S. "Qwoak" <qwoak11@gmail.com>
 
 # Ràz
@@ -82,5 +82,26 @@ CCFLAGS = -I$(INC)
 LDFLAGS = -L$(LIB)
 
 # Inclusion de la configuration spécifique à l'OS.
-# (Définition de OUT, CC, des recettes, Màjs de CCFLAGS et LDFLAGS)
+# (Définition de OUT, CC, de la recette build, Màjs de CCFLAGS et LDFLAGS)
 include ./mk/$(_OS).mk
+
+# Recettes communes.
+.PHONY: setup
+.PHONY: clean
+.PHONY: doc
+.PHONY: timestamp
+
+setup:
+	mkdir -p $(OBJ) > /dev/null
+	mkdir -p $(BUILD) > /dev/null
+	mkdir -p $(LIB) > /dev/null
+
+clean:
+	rm $(BUILD)/$(OUT) > /dev/null
+	rm $(OBJ)/*.o > /dev/null
+
+doc:
+	doxygen Doxyfile
+
+timestamp:
+	date +"%c" > TIMESTAMP

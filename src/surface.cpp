@@ -20,21 +20,20 @@
 
 /**
  * @file    surface.cpp
- * @version 0.2.1
- * @author  Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
- * @date    28 Novembre 2015
+ * @version 0.2.1.2
+ * @author  Jérémy S. "Qwoak"
+ * @date    19 Janvier 2016
  * @brief   Manipulation des surfaces.
  */
 
 #include <iostream>
 #include <sstream>
 #include <Cirion/ciexception.hpp>
+#include <Cirion/cirion.hpp>
 #include <Cirion/log.hpp>
 #include <Cirion/surface.hpp> // R_MASK, G_MASK, B_MASK, A_MASK
 
 using namespace std;
-
-extern SDL_Window* gWindow; //!< cf cirion.cpp
 
 /* +------------------------------------------------------------------------+
    ! Définition des constructeurs / déstructeurs.                           !
@@ -52,7 +51,6 @@ cirion::Surface::~Surface()
     if( mSurface != NULL )
     {
         SDL_FreeSurface( mSurface );
-
         log( (char*)"Surface freed.", __PRETTY_FUNCTION__ );
         mSurface = NULL;
     }
@@ -72,8 +70,6 @@ void cirion::Surface::create( int width, int height )
     ostringstream oss;
     //! La nouvelle surface crée.
     SDL_Surface*  surface = NULL;
-    //! Le format d'affichage actuel pour l'optimisation.
-    Uint8         bitsPerPixels;
 
     // --- SDL2 est-elle initialisée ? -----------------------------------------
     if ( !(SDL_WasInit(0) & SDL_INIT_VIDEO) )
@@ -90,12 +86,9 @@ void cirion::Surface::create( int width, int height )
         SDL_FreeSurface( mSurface );
     }
 
-    // --- Récuperation du format d'affichage. ---------------------------------
-    bitsPerPixels = SDL_GetWindowSurface( gWindow )->format->BitsPerPixel;
-
-    // --- Création d'une nouvelle surface optimisée. --------------------------
-    surface = SDL_CreateRGBSurface( 0, width, height, bitsPerPixels, R_MASK,
-        G_MASK, B_MASK, A_MASK );
+    // --- Création d'une nouvelle surface. ------------------------------------
+    surface = SDL_CreateRGBSurface( 0, width, height, 32, R_MASK, G_MASK,
+        B_MASK, A_MASK );
 
     if ( surface == NULL )
     {
@@ -132,8 +125,6 @@ void cirion::Surface::create( const char* filepath )
     ostringstream oss;
     //! La surface crée à partir du fichier.
     SDL_Surface*  surface           = NULL;
-    //! Le nombre de bits par pixels de la surface convertie.
-    Uint32        bitsPerPixels;
     //! Le format des pixels de la surface convertie.
     Uint32        pixelFormat;
     //! La surface optimisée pour le format d'affichage courrant.
@@ -166,13 +157,8 @@ void cirion::Surface::create( const char* filepath )
     }
 
     // --- Création d'une surface optimisée. -----------------------------------
-    bitsPerPixels     = SDL_GetWindowSurface( gWindow )->format->BitsPerPixel;
-
-    pixelFormat       = SDL_MasksToPixelFormatEnum( bitsPerPixels,
-                                                    R_MASK,
-                                                    G_MASK,
-                                                    B_MASK,
-                                                    A_MASK );
+    pixelFormat = SDL_MasksToPixelFormatEnum( 32, R_MASK, G_MASK, B_MASK,
+        A_MASK );
 
     optimized_surface = SDL_ConvertSurfaceFormat( surface, pixelFormat, 0 );
 

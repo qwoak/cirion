@@ -20,9 +20,9 @@
 
  /**
  * @file    graphic.cpp
- * @version 0.2
- * @author  Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
- * @date    25 Novembre 2015
+ * @version 0.2.1
+ * @author  Jérémy S. "Qwoak"
+ * @date    21 Décembre 2015
  * @brief   Element graphique singulier.
  */
 
@@ -47,7 +47,7 @@ cirion::Graphic::~Graphic()
    +------------------------------------------------------------------------+ */
 
 //! @brief Procédure de traîtement de l'évenement.
-void cirion::Graphic::handleEvent()
+void cirion::Graphic::handleEvent( SDL_Event* event )
 {
     //!< Il n'y a pas d'évenements à traiter pour l'objet Graphic.
 }
