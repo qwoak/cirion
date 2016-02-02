@@ -20,62 +20,59 @@
 
 /**
  * @file    cirion.cpp
- * @version 0.1.7
- * @author  Jérémy S. "Qwoak" <qwoak11@gmail.com>
- * @date    06 Novembre 2015
- * @brief   Cirion Engine.
+ * @version 0.2.3.2
+ * @author  Jérémy S. "Qwoak"
+ * @date    14 Janvier 2016
+ * @brief   Coeur du moteur
  */
 
 #include <iostream>
 #include <sstream>
 #include <vector>
 #include <SDL2/SDL.h>
-#include <Cirion/bubble.hpp>
 #include <Cirion/ciexception.hpp>
 #include <Cirion/cirion.hpp>
-#include <Cirion/cmf.hpp>
 #include <Cirion/config.hpp>
+#include <Cirion/gameobject.hpp>
 #include <Cirion/log.hpp>
-#include <Cirion/object.hpp>
-#include <Cirion/graphic.hpp>
-#include <Cirion/surface.hpp>
 #include <Cirion/texture.hpp>
 #include <Cirion/timer.hpp>
 #include <Cirion/world.hpp>
-#include <Cirion/xmlerror.hpp>
 
 using namespace std;
 using namespace cirion;
 
-bool             gRunning;             //!< Drapeau de mise en route
-Config           gConfig;              //!< La configuration du moteur
-char*            gWorkingDir;          //!< Chemin des ressources du jeu
-int              gTimeStep;            //!< Le délai entre chaque nouvelle image.
-SDL_Window*      gWindow      = NULL;  //!< Fenêtre SDL2
-SDL_Renderer*    gRenderer    = NULL;  //!< Renderer SDL2
-SDL_Event        gEvent;               //!< Evenements SDL2
-vector<Texture*> gTextures;            //!< Vecteur de textures
-vector<Object*>  gObjects;             //!< Vecteur d'objets à traîter
-World            gWorld;               //!< Le monde
+const char* gVersion = "0.3.1";
+const char* gWorkingDir = "./Data";
+const int gRendererWidth = 320;
+const int gRendererHeight = 240;
+Config gConfig;
+bool gIsRunning;
+Timer gRenderTimer;
+SDL_Window* gWindow;
+SDL_Renderer* gRenderer;
+SDL_Event gEvent;
+vector<Texture*> gTextures;
+vector<GameObject*> gGameObjects;
+World gWorld;
 
 //! @brief Procédure d'initialisation du moteur.
-//! @throw CiException
+//! @throw CiException en cas d'échec.
 void cirion::init()
 {
     ostringstream oss;
-    int           windowWidth;  //!< La largeur de la fenêtre
-    int           windowHeight; //!< La hauteur de la fenêtre
-    Uint32        windowFlags;  //!< Les paramètres de la fenêtre
+    Uint32 windowFlags;
+    Uint32 rendererFlags;
 
     oss << "Initializing Cirion Engine v"
-        << CIRION_VERSION;
+        << gVersion;
 
     log( oss.str().c_str(), __PRETTY_FUNCTION__ );
 
     // --- Chargement de la configuration. -------------------------------------
     try
     {
-        gConfig.load( (char*)"./Config.xml" );
+        gConfig.load( (const char*)"./Config.xml" );
     }
 
     catch( CiException const& e )
@@ -83,25 +80,8 @@ void cirion::init()
         log( e );
     }
 
-    /* Préconfiguration de la fenêtre SDL2 ... */
-    if( gConfig.isFullscreen() )
-    {
-        /*  ... en mode plein-écran. */
-        windowWidth  = gConfig.getFullscreenWidth();
-        windowHeight = gConfig.getFullscreenHeight();
-        windowFlags  = SDL_WINDOW_HIDDEN | SDL_WINDOW_FULLSCREEN;
-    }
-
-    else
-    {
-        /* ... en mode fenêtré. */
-        windowWidth  = gConfig.getWindowWidth();
-        windowHeight = gConfig.getWindowHeight();
-        windowFlags  = SDL_WINDOW_HIDDEN;
-    }
-
     // --- Initialisation de la lib. SDL2. -------------------------------------
-    if ( SDL_Init( SDL_INIT_VIDEO | SDL_INIT_AUDIO ) != 0 )
+    if ( SDL_Init( SDL_INIT_VIDEO ) != 0 )
     {
         oss.str("");
 
@@ -112,22 +92,40 @@ void cirion::init()
     }
 
     // --- Création de la fenêtre SDL2. ----------------------------------------
+    
+    windowFlags  = SDL_WINDOW_HIDDEN; 
+    windowFlags |= gConfig.mIsFullscreen
+                 ? SDL_WINDOW_FULLSCREEN_DESKTOP
+                 : 0;
+
     gWindow = SDL_CreateWindow( "SDL2",
                                 SDL_WINDOWPOS_CENTERED,
                                 SDL_WINDOWPOS_CENTERED,
-                                windowWidth,
-                                windowHeight,
+                                gConfig.mWindowWidth,
+                                gConfig.mWindowHeight,
                                 windowFlags );
 
     if( gWindow == NULL )
     {
         oss.str("");
+
+        oss << "Window creation failed: "
+            << SDL_GetError();
+
         throw CiException( oss.str().c_str(), __PRETTY_FUNCTION__ );
     }
 
     // --- Création du renderer. -----------------------------------------------
-    gRenderer = SDL_CreateRenderer( gWindow, -1, 0 );
-    cout << SDL_GetError() << endl << endl;
+    
+    rendererFlags  = 0;
+    rendererFlags |= gConfig.mIsHwRenderEnabled
+                   ? SDL_RENDERER_ACCELERATED
+                   : 0;
+    rendererFlags |= gConfig.mIsVsyncEnabled
+                   ? SDL_RENDERER_PRESENTVSYNC
+                   : 0;
+
+    gRenderer = SDL_CreateRenderer( gWindow, -1, rendererFlags );
 
     if ( gRenderer == NULL )
     {
@@ -139,135 +137,127 @@ void cirion::init()
         throw CiException( oss.str().c_str(), __PRETTY_FUNCTION__ );
     }
 
-    SDL_RenderSetLogicalSize( gRenderer, RENDERER_WIDTH, RENDERER_HEIGHT );
+    SDL_RenderSetLogicalSize( gRenderer,
+                              gRendererWidth,
+                              gRendererHeight );
 
     // --- Affichage de la fenêtre, nettoyage et actualisation du renderer. ----
     SDL_ShowWindow( gWindow );
+    SDL_SetRenderDrawColor( gRenderer, 0x00, 0x00, 0x00, 0xFF );
     SDL_RenderClear( gRenderer );
     SDL_RenderPresent( gRenderer );
-
-    // --- Go, go, go ! --------------------------------------------------------
-    gRunning = true;
 }
 
-//! @brief
-//! @param
-void cirion::setWorkingDir( char* path )
-{
-    gWorkingDir = path;
-}
-
-//! @brief Procédure de gestion d'un évenement principal.
+//! @brief Procédure de traîtement des évenements.
 void cirion::handleEvents()
 {
-    /* Parcours de la liste des évenements en attentes */
+    // Parcours de la liste des évenements en attentes
     while( SDL_PollEvent( &gEvent ) )
     {
         switch( gEvent.type )
         {
             case SDL_QUIT:
-            gRunning = false;
+            gIsRunning = false;
             break;
 
             case SDL_KEYDOWN: 
             switch( gEvent.key.keysym.sym )
             {
                 case SDLK_ESCAPE:
-                gRunning = false;
+                gIsRunning = false;
                 break;
             }
 
             break;
         }
 
-        /* Traitement de l'évenement pour le monde */
-        gWorld.handleEvent();
+        // Traitement de l'évenement dans le monde
+        gWorld.handleEvent( &gEvent );
 
-        /* Parcours de la liste des objets */
-        for( size_t i = 0; i != gObjects.size(); i++ )
+        // Parcours de la liste des objets
+        for( size_t i = 0; i != gGameObjects.size(); i++ )
         {
-            /* Traîtement de l'évenement pour l'objet */
-            gObjects[i]->handleEvent(); 
+            // Traîtement de l'évenement dans l'objet
+            gGameObjects[i]->handleEvent( &gEvent ); 
         }
     }
 }
 
-void cirion::update()
+//! @brief Procédure de mise à jour des composantes du moteur.
+void cirion::update( int timeStep )
 {
-    /* Mise à jour du monde */
-    gWorld.update();
+    // Mise à jour du monde
+    gWorld.update( timeStep );
 
-    /* Parcours de la lite des objets */
-    for( size_t i = 0; i != gObjects.size(); i++ )
+    // Parcours de la lise des objets
+    for( size_t i = 0; i != gGameObjects.size(); i++ )
     {
-        gObjects[i]->update();
+        // Mise à jour de l'objet
+        gGameObjects[i]->update( timeStep );
     }
 }
 
+//! @brief Procédure de rendu.
 void cirion::render()
 {
-    /* Nettoyage du renderer */
-    SDL_SetRenderDrawColor( gRenderer, 0x00, 0x00, 0x00, 0xFF );
+    // Nettoyage du renderer
     SDL_RenderClear( gRenderer );
 
-    /* Dessin du monde */
+    // Dessin du monde
     gWorld.draw();
 
-    /* Parcours de la liste des objets */
-    for( size_t i = 0; i != gObjects.size(); i++ )
+    // Parcours de la liste des objets
+    for( size_t i = 0; i != gGameObjects.size(); i++ )
     {
-        /* Dessin de l'objet */
-        gObjects[i]->draw();
+        // Dessin de l'objet
+        gGameObjects[i]->draw();
     }
 
-    /* Actualisation du renderer */
+    // Actualisation du renderer
     SDL_RenderPresent( gRenderer );
 }
 
 //! @brief Procédure de boucle principale.
 void cirion::run()
 {
-    int previousTime;
-    int currentTime( SDL_GetTicks() );
-    int delay;
-
     log( (const char*)"Entering main loop.", __PRETTY_FUNCTION__ );
+    gIsRunning = true;
+    gRenderTimer.start();
 
     // --- Boucle principale. --------------------------------------------------
-    while( gRunning )
+    while( gIsRunning)
     {
-    	previousTime = currentTime;
-    	currentTime  = SDL_GetTicks();
-    	gTimeStep    = currentTime - previousTime;
-
         handleEvents();
-        update();
+        update( gRenderTimer.getTicks() );
+        //cout << gRenderTimer.getTicks() << endl;
+        gRenderTimer.reset();
         render();
-
-        delay = 1000 / gConfig.getFramerate() - (SDL_GetTicks() - currentTime);
-
-        delay = delay < 0
-              ? 0
-              : delay;
-
-        SDL_Delay( delay );
+        //SDL_Delay( 1 );
     }
 }
 
-//! @brief Procédure de sortie.
+//! @brief Procédure d'arrêt du moteur.
 void cirion::quit()
 {
     log( (const char*)"Exiting cirion ...", __PRETTY_FUNCTION__ );
 
-    // --- Liberation des éléments du vecteur d'objets. ------------------------
-    for( size_t i = 0; i != gObjects.size(); i++ )  { delete gObjects[i];  }
-    gObjects.clear();
+    // Liberation des objets
+    for( size_t i = 0; i != gGameObjects.size(); i++ )
+    {
+        delete gGameObjects[i];
+    }
 
-    // --- Liberation des éléments du vecteur de textures. ---------------------
-    for( size_t i = 0; i != gTextures.size(); i++ ) { delete gTextures[i]; }
+    gGameObjects.clear();
+
+    // Liberation des textures
+    for( size_t i = 0; i != gTextures.size(); i++ )
+    {
+        delete gTextures[i];
+    }
+
     gTextures.clear();
 
-    /* Liberations  */
+    // Liberation des ressources de la lib. SDL2.
     SDL_DestroyWindow( gWindow );
     SDL_DestroyRenderer( gRenderer );
     SDL_Quit();

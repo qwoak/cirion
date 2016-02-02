@@ -20,34 +20,28 @@
 
 /**
  * @file    config.hpp
- * @version 0.1
- * @author  Jérémy S. "Qwoak" <qwoak11@gmail.com>
- * @date    11 Août 2015
+ * @version 0.2
+ * @author  Jérémy S. "Qwoak"
+ * @date    03 Janvier 2016
  * @brief   Gestion de la configuration.
  */
 
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
 
-#include <string>
 #include <tinyxml2.h>
 
 namespace cirion
 {
     /**
-     * @struct config_t
+     * @struct Keymap
      *
-     * Une structure utilisée pour représenter l'architecture du fichier de
-     * configuration.
+     * Une structure pour stocker la carte des touches.
      */
     typedef struct
     {
-        tinyxml2::XMLDocument doc;
-        tinyxml2::XMLElement* root;
-        tinyxml2::XMLElement* window;
-        tinyxml2::XMLElement* renderer;
-
-    } config_t;
+        int up, down, left, right, jump, fire;
+    } Keymap;
 
     /**
      * @class Config config.hpp
@@ -62,32 +56,21 @@ namespace cirion
            ! Déclaration des constructeurs / déstructeurs.                  !
            +----------------------------------------------------------------+ */
         Config();
-        ~Config();
         /* +----------------------------------------------------------------+
-           ! Déclaration des méthodes.                                      !
+           ! Déclaration des méthodes publiques.                            !
            +----------------------------------------------------------------+ */
-        void load( std::string filepath );
-        void setFullscreen( bool fullscreen );
-        void setWindowSize( int width, int height );
-        void setFullscreenSize( int width, int height );
-        void setFramerate( int framerate );
-        bool isFullscreen();
-        int getWindowWidth();
-        int getWindowHeight();
-        int getFullscreenWidth();
-        int getFullscreenHeight();
-        int getFramerate();
-
-        private:
+        void load( const char* filepath );
+        void write( const char* filepath );
+        
         /* +----------------------------------------------------------------+
-           ! Déclaration des attributs.                                     !
+           ! Déclaration des attributs publiques.                           !
            +----------------------------------------------------------------+ */
-        bool mFullscreen;      //!< Drapeau de plein-écran
-        int mWindowWidth;      //!< Largeur de la fenêtre SDL2 en pixels
-        int mWindowHeight;     //!< Hauteur de la fenêtre SDL2 en pixels
-        int mFullscreenWidth;  //!< Largeur plein-écran en pixels
-        int mFullscreenHeight; //!< Hauteur plein-écran en pixels
-        int mFramerate;        //!< Taux de rafraichissement désiré
+        int mWindowWidth;
+        int mWindowHeight;
+        bool mIsFullscreen;
+        bool mIsHwRenderEnabled;
+        bool mIsVsyncEnabled;
+        Keymap mKeyboardMap;
     };
 }
 

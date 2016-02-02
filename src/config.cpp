@@ -20,168 +20,153 @@
 
 /**
  * @file    config.cpp
- * @version 0.1
- * @author  Jérémy S. "Qwoak" <qwoak11@gmail.com>
- * @date    11 Août 2015
+ * @version 0.2
+ * @author  Jérémy S. "Qwoak"
+ * @date    03 Janvier 2015
  * @brief   Gestion de la configuration.
  */
 
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <SDL2/SDL.h>
 #include <Cirion/ciexception.hpp>
-#include <Cirion/xmlerror.hpp>
 #include <Cirion/config.hpp>
+#include <Cirion/xmlerror.hpp>
 
 using namespace std;
 using namespace tinyxml2;
 using namespace cirion;
 
-/* +------------------------------------------------------------------------+
-   ! Définitions des constructeurs / déstructeurs.                          !
-   +------------------------------------------------------------------------+ */
-
 //! @brief Constructeur pour la classe Config.
-cirion::Config::Config()
+cirion::Config::Config() :
+    mWindowWidth( 640 ),
+    mWindowHeight( 480 ),
+    mIsFullscreen( false ),
+    mIsHwRenderEnabled( true ),
+    mIsVsyncEnabled( true )
 {
-    mFullscreen         = false;
-    mWindowWidth        = 640;
-    mWindowHeight       = 480;
-    mFullscreenWidth    = 640;
-    mFullscreenHeight   = 480;
-    mFramerate          = 50;
+    mKeyboardMap.up    = SDLK_z;
+    mKeyboardMap.down  = SDLK_s;
+    mKeyboardMap.left  = SDLK_q;
+    mKeyboardMap.right = SDLK_d;
+    mKeyboardMap.jump  = SDLK_l;
+    mKeyboardMap.fire  = SDLK_m;
 }
-
-//! @brief Déstructeur pour la classe Config.
-cirion::Config::~Config()
-{
-}
-
-/* +------------------------------------------------------------------------+
-   ! Définitions des méthodes.                                              !
-   +------------------------------------------------------------------------+ */
 
 //! @brief Procédure de chargement d'un fichier de configuration.
 //! @param filepath Chemin vers le fichier.
-//! @throw CiException
-void cirion::Config::load( string filepath )
+//! @throw CiException en cas d'échec.
+void cirion::Config::load( const char* filepath )
 {
-    config_t config;
+    tinyxml2::XMLDocument xml;
+    tinyxml2::XMLElement* configNode;
+    tinyxml2::XMLElement* windowNode;
+    tinyxml2::XMLElement* rendererNode;
+    tinyxml2::XMLElement* keymapNode;
+    tinyxml2::XMLElement* upNode;
+    tinyxml2::XMLElement* downNode;
+    tinyxml2::XMLElement* leftNode;
+    tinyxml2::XMLElement* rightNode;
+    tinyxml2::XMLElement* jumpNode;
+    tinyxml2::XMLElement* fireNode;
 
     // --- Ouverture du fichier XML. -------------------------------------------
-    if( config.doc.LoadFile( filepath.c_str() ) != XML_NO_ERROR )
+    if( xml.LoadFile( filepath ) != XML_NO_ERROR )
     {
         ostringstream oss;
 
         oss << "Unable to load the configuration file \""
             << filepath
             << "\": "
-            << getXmlErrorStr( config.doc.ErrorID() );
+            << getXmlErrorStr( xml.ErrorID() );
 
         throw CiException( oss.str().c_str(), __PRETTY_FUNCTION__ );
     }
 
-    // --- Récuperation du noeud racine. ---------------------------------------
-    config.root = config.doc.FirstChildElement( "config" );
+    // --- Récuperation du noeud <config>. -------------------------------------
+    configNode = xml.FirstChildElement( "config" );
 
-    if( config.root != NULL )
+    if( configNode!= NULL )
     {
-        // --- Récuperation des neuds. -----------------------------------------
-        config.window   = config.root->FirstChildElement( "window"   );
-        config.renderer = config.root->FirstChildElement( "renderer" );
+        // --- Récuperation du neud <window>. ----------------------------------
+        windowNode = configNode->FirstChildElement( "window" );
 
-        // --- Lecture des attributs. ------------------------------------------
-        if( config.window != NULL )
+        if( windowNode != NULL )
         {
-            /* Configuration de la fenêtre SDL2. */
-            config.window->QueryBoolAttribute( "fs"  , &mFullscreen       );
-            config.window->QueryIntAttribute ( "w_w" , &mWindowWidth      );
-            config.window->QueryIntAttribute ( "w_h" , &mWindowHeight     );
-            config.window->QueryIntAttribute ( "fs_w", &mFullscreenWidth  );
-            config.window->QueryIntAttribute ( "fs_h", &mFullscreenHeight );
+            windowNode->QueryIntAttribute ( "w" , &mWindowWidth  );
+            windowNode->QueryIntAttribute ( "h" , &mWindowHeight );
+            windowNode->QueryBoolAttribute( "fs", &mIsFullscreen   );
         }
 
-        if( config.renderer != NULL )
+        // --- Récuperation du neud <renderer>. --------------------------------
+        rendererNode = configNode->FirstChildElement( "renderer" );
+
+        if( rendererNode != NULL )
         {
-            /* Configuration du rendu. */
-            config.renderer->QueryIntAttribute( "fps" , &mFramerate );
+            rendererNode->QueryBoolAttribute( "hw"   , &mIsHwRenderEnabled );
+            rendererNode->QueryBoolAttribute( "vsync", &mIsVsyncEnabled    );
+        }
+
+        // --- Récuperation du neud <keymap>. ----------------------------------
+        keymapNode = configNode->FirstChildElement( "keymap" );
+
+        if( keymapNode != NULL )
+        {
+            // --- Récuperation du neud <up>. ----------------------------------
+            upNode = keymapNode->FirstChildElement( "up" );
+
+            if( upNode != NULL )
+            {
+                upNode->QueryIntAttribute ( "value" , &mKeyboardMap.up );
+            }
+
+            // --- Récuperation du neud <down>. --------------------------------
+            downNode = keymapNode->FirstChildElement( "down" );
+
+            if( downNode != NULL )
+            {
+                downNode->QueryIntAttribute ( "value" , &mKeyboardMap.down );
+            }
+
+            // --- Récuperation du neud <left>. --------------------------------
+            leftNode = keymapNode->FirstChildElement( "left" );
+
+            if( leftNode != NULL )
+            {
+                leftNode->QueryIntAttribute ( "value" , &mKeyboardMap.left );
+            }
+
+            // --- Récuperation du neud <right>. -------------------------------
+            rightNode = keymapNode->FirstChildElement( "right" );
+
+            if( rightNode != NULL )
+            {
+                rightNode->QueryIntAttribute ( "value" , &mKeyboardMap.right );
+            }
+
+            // --- Récuperation du neud <jump>. --------------------------------
+            jumpNode = keymapNode->FirstChildElement( "jump" );
+
+            if( jumpNode != NULL )
+            {
+                jumpNode->QueryIntAttribute ( "value" , &mKeyboardMap.jump );
+            }
+
+            // --- Récuperation du neud <fire>. --------------------------------
+            fireNode = keymapNode->FirstChildElement( "fire" );
+
+            if( fireNode != NULL )
+            {
+                fireNode->QueryIntAttribute ( "value" , &mKeyboardMap.fire );
+            }
         }
     }
 }
 
-//! @brief Procédure de basculement du mode plein-écran.
-//! @param fullscreen Etat.
-void cirion::Config::setFullscreen( bool fullscreen )
+//! @brief Procédure d'écriture du fichier de configuration sur le disque.
+//! @param filepath Chemin vers le fichier.
+//! @throw CiException en cas d'échec.
+void cirion::Config::write( const char* filepath )
 {
-    mFullscreen = fullscreen;
-}
-
-//! @brief Procédure de paramètrage de la taille de la fenêtre en mode fenétré.
-//! @param width Largeur en pixels.
-//! @param height Hauteur en pixels.
-void cirion::Config::setWindowSize( int width, int height )
-{
-    mWindowWidth  = width  <= 0 ? 0 : width;
-    mWindowHeight = height <= 0 ? 0 : height;
-}
-
-//! @brief Procédure de paramètrage de la taille de la fenêtre en mode 
-//! plein-écran.
-//! @param width Largeur en pixels.
-//! @param height Hauteur en pixels.
-void cirion::Config::setFullscreenSize( int width, int height )
-{
-    mFullscreenWidth  = width  <= 0 ? 0 : width;
-    mFullscreenHeight = height <= 0 ? 0 : height;
-}
-
-//! @brief Procédure de paramètrage de la fréquence de rafraichissement.
-//! @param fps Nombre d'images par secondes.
-void cirion::Config::setFramerate( int fps )
-{
-    mFramerate = fps <= 0 ? 0 : fps;
-}
-
-//! @brief Accesseur.
-//! @return Etat de la fenêtre.
-//!     true : Mode plein-écran.
-//!     false: mode fenétré.
-bool cirion::Config::isFullscreen()
-{
-    return mFullscreen;
-}
-
-//! @brief Accesseur.
-//! @return Largeur en pixels de la fenêtre dans le mode fenétré.
-int cirion::Config::getWindowWidth()
-{
-    return mWindowWidth;
-}
-
-//! @brief Accesseur.
-//! @return Hauteur en pixels de la fenêtre dans le mode fenétré.
-int cirion::Config::getWindowHeight()
-{
-    return mWindowHeight;
-}
-
-//! @brief Accesseur.
-//! @return Largeur en pixels de la fenêtre dans le mode plen-écran.
-int cirion::Config::getFullscreenWidth()
-{
-    return mFullscreenWidth;
-}
-
-//! @brief Accesseur.
-//! @return Heuteur en pixels de la fenêtre dans le mode plen-écran.
-int cirion::Config::getFullscreenHeight()
-{
-    return mFullscreenHeight;
-}
-
-//! @brief Accesseur.
-//! @return Taux de rafraichissement en nombre d'images par seconde.
-int cirion::Config::getFramerate()
-{
-    return mFramerate;
 }

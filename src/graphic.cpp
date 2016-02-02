@@ -20,47 +20,41 @@
 
  /**
  * @file    graphic.cpp
- * @version 0.1
- * @author  Jérémy S. "Qwoak" <qwoak11@gmail.com>
- * @date    16 Octobre 2015
+ * @version 0.2.1
+ * @author  Jérémy S. "Qwoak"
+ * @date    21 Décembre 2015
  * @brief   Element graphique singulier.
  */
 
-#include <iostream>
 #include <Cirion/graphic.hpp>
 
-using namespace std;
-using namespace cirion;
-
 /* +------------------------------------------------------------------------+
-   ! Définitions des constructeurs / déstructeurs.                          !
+   ! Définition des constructeurs / déstructeurs.                           !
    +------------------------------------------------------------------------+ */
 
-//! @brief Constructeur pour la classe Graphic.
+//! @brief Constructeur pour la classe Graphic
 cirion::Graphic::Graphic()
 {
 }
 
-//! @brief Déstructeur pour la classe Graphic.
+//! @brief Déstructeur pour la classe Graphic
 cirion::Graphic::~Graphic()
 {
 }
 
 /* +------------------------------------------------------------------------+
-   ! Définitions des méthodes.                                              !
+   ! Définition des méthodes publiques                                      !
    +------------------------------------------------------------------------+ */
 
-//! @brief
-void cirion::Graphic::create()
+//! @brief Procédure de traîtement de l'évenement.
+void cirion::Graphic::handleEvent( SDL_Event* event )
 {
+    //!< Il n'y a pas d'évenements à traiter pour l'objet Graphic.
 }
 
-//! @brief
-void cirion::Graphic::update()
+//! @brief Procédure de mise à jour de l'objet.
+//! @param timeStep Temps écoulé depuis la dernière image.
+void cirion::Graphic::update( int timeStep )
 {
-}
-
-//! @brief
-void cirion::Graphic::handleEvent()
-{
+    //!< Il n'y a pas de mises à jour à effectuer pour l'objet Graphic.
 }

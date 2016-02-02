@@ -20,14 +20,27 @@
 
 /**
  * @file    surface.hpp
- * @version 0.2
- * @author  Jérémy S. "Qwoak" <qwoak11@gmail.com>
- * @date    07 Novembre 2015
+ * @version 0.2.1
+ * @author  Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
+ * @date    28 Novembre 2015
  * @brief   Manipulation des surfaces.
  */
 
 #ifndef SURFACE_HPP
 #define SURFACE_HPP
+
+// Définition du masque RGBA
+#if SDL_BYTEORDER == SDL_BIG_ENDIAN
+    #define R_MASK 0xff000000
+    #define G_MASK 0x00ff0000
+    #define B_MASK 0x0000ff00
+    #define A_MASK 0x000000ff
+#else
+    #define R_MASK 0x000000ff
+    #define G_MASK 0x0000ff00
+    #define B_MASK 0x00ff0000
+    #define A_MASK 0xff000000
+#endif
 
 #include <SDL2/SDL.h>
 
@@ -47,7 +60,7 @@ namespace cirion
         Surface();
         ~Surface();
         /* +----------------------------------------------------------------+
-           ! Déclaration des méthodes.                                      !
+           ! Déclaration des méthodes publiques.                            !
            +----------------------------------------------------------------+ */
         void create( int width, int height );
         void create( const char* filepath );
@@ -60,7 +73,7 @@ namespace cirion
 
         private:
         /* +----------------------------------------------------------------+
-           ! Déclaration des attributs.                                     !
+           ! Déclaration des attributs privés.                              !
            +----------------------------------------------------------------+ */
         SDL_Surface* mSurface; //!< La structure de surface SDL2
     };

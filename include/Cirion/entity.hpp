@@ -19,22 +19,38 @@
  */
 
 /**
- * @file    log.hpp
- * @version 0.1
- * @author  Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
- * @date    23 Août 2015
- * @brief   Report des messages au journal.
+ * @file    entity.hpp
+ * @version 0.1.2.1
+ * @author  Jérémy S. "Qwoak"
+ * @date    14 Janvier 2016
+ * @brief   Manipulation des entités.
  */
 
-#ifndef LOG_HPP
-#define LOG_HPP
+#ifndef ENTITY_HPP
+#define ENTITY_HPP
 
-#include <Cirion/log.hpp>
+#include <tinyxml2.h>
+#include <Cirion/gameobject.hpp>
+#include <Cirion/point2.hpp>
+#include <Cirion/sprite.hpp>
 
 namespace cirion
 {
-    void log( const char* msg, const char* from );
-    void log( const CiException& e );
+    class Entity : public GameObject
+    {
+        public:
+        Entity();
+        virtual ~Entity();
+        void load( const char* entityName );
+        void draw( const Point2f& origin = Point2f( 0.0f, 0.0f ) );
+        tinyxml2::XMLElement* getSpriteNode( const char* spriteName );
+
+        protected:
+        /** Le document XML de l'entité */
+        tinyxml2::XMLDocument mXml;
+        /** Le vecteur de sprites qui composent l'entité */
+        std::vector<Sprite*> mSprites;
+    };
 }
 
-#endif // LOG_HPP
+#endif // ENTITY_HPP

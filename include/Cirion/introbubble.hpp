@@ -19,49 +19,46 @@
  */
 
 /**
- * @file    timer.hpp
- * @version 1.0
- * @author  Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
- * @date    22 Août 2015
- * @brief   Minuterie
+ * @file    introbubble.hpp
+ * @version 0.2.3
+ * @author  Jérémy S. "Qwoak"
+ * @date    01 Janvier 2016
+ * @brief   Bulle utilisée dans l'introduction.
  */
 
-#ifndef TIMER_HPP
-#define TIMER_HPP
+#ifndef INTROBUBBLE_HPP
+#define INTROBUBBLE_HPP
 
-#include <SDL2/SDL.h>
+#include <Cirion/gameobject.hpp>
+#include <Cirion/point3.hpp>
 
 namespace cirion
 {
-    /**
-     * @class Timer timer.hpp
-     *
-     * Une classe pour mesurer l'écoulement du temps.
-     */
-    class Timer
+    class IntroBubble : public GameObject
     {
         public:
         /* +----------------------------------------------------------------+
            ! Déclaration des constructeurs / déstructeurs.                  !
            +----------------------------------------------------------------+ */
-        Timer();
+        IntroBubble();
+        ~IntroBubble();
         /* +----------------------------------------------------------------+
-           ! Déclaration des méthodes.                                      !
+           ! Déclaration des méthodes publiques.                            !
            +----------------------------------------------------------------+ */
-        bool isRunning();
-        void start();
-        void stop();
-        void reset();
-        Uint32 getTicks();
+        void create();
+        void update( int timeStep = 0 );
+        void handleEvent( SDL_Event* event = NULL );
 
         private:
         /* +----------------------------------------------------------------+
-           ! Déclaration des attributs.                                     !
+           ! Déclaration des méthodes privées.                              !
            +----------------------------------------------------------------+ */
-        bool mRunning;      //!< Drapeau de mise en fonction
-        Uint32 mStartTicks; //!< Compteur de battements au démarrage
-        Uint32 mStopTicks;  //!< Compteur de battements à l'arrêt
+        void regen( bool randomDepth = false );
+        /* +----------------------------------------------------------------+
+           ! Déclaration des attributs privéss.                             !
+           +----------------------------------------------------------------+ */
+        Point3f mBubblePosition;
     };
 }
 
-#endif // TIMER_HPP
+#endif // INTROBUBBLE_HPP

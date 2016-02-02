@@ -20,23 +20,27 @@
 
  /**
  * @file    world.hpp
- * @version 0.4
- * @author  Jérémy S. "Qwoak" <qwoak11@gmail.com>
- * @date    08 Novembre 2015
+ * @version 0.4.1
+ * @author  Jérémy S. "Qwoak"
+ * @date    21 Décembre 2015
  * @brief   Le monde.
  */
 
 #ifndef WORLD_HPP
 #define WORLD_HPP
-#define TILE_WIDTH  16
-#define TILE_HEIGHT 16
+#define TILE_W 16
+#define TILE_H 16
 
 #include <fstream>
 #include <vector>
 #include <Cirion/cmf.hpp>
-#include <Cirion/object.hpp>
+#include <Cirion/gameobject.hpp>
+#include <Cirion/point2.hpp>
 #include <Cirion/surface.hpp>
 #include <Cirion/texture.hpp>
+
+extern const int tileWidth;
+extern const int tileHeight;
 
 namespace cirion
 {
@@ -47,40 +51,37 @@ namespace cirion
      */
     class World
     {
-        public:
-        /* +------------------------------------------------------------+
-           ! Déclaration des constructeurs / déstructeurs.              !
-           +------------------------------------------------------------+ */
+    public:
         World();
         ~World();
-        /* +------------------------------------------------------------+
-           ! Déclaration des méthodes publiques.                        !
-           +------------------------------------------------------------+ */
         void create( const char* name );
-        void handleEvent();
-        void update();
+        void handleEvent( SDL_Event* event = NULL );
+        void update( int timeStep = 0 );
         void draw();
 
-        private:
-        /* +------------------------------------------------------------+
-           ! Déclaration des méthodes privées.                          !
-           +------------------------------------------------------------+ */
+    private:
         void drawBackground();
         void drawMap();
         void drawObjects();
-        /* +------------------------------------------------------------+
-           ! Déclaration des attributs privés.                          !
-           +------------------------------------------------------------+ */
-        int mWorldX;                   //!< Position du monde en abscisse
-        int mWorldY;                   //!< Position du monde en ordonnée
-        Cmf mMap;                      //!< Les données de la map
-        Texture mTileset;              //!< Le tileset
-        Texture mBackground;           //!< Le background
-        SDL_Rect mTileSrc;             //!< Source de la tuile
-        SDL_Rect mTileDest;            //!< Destination de la tuile
-        SDL_Rect mBackgroundSrc;       //!< Source du background
-        SDL_Rect mBackgroundDest;      //!< Destination du background
-        std::vector<Object*> mObjects; //!< Vecteur d'objets du monde
+
+        /** Position dans le monde */
+        Point2f mPosition;
+        /** Les données de la map */
+        Cmf mCmf;
+        /** La texture du tileset */
+        Texture mTileset;
+        /** La texture du background */
+        Texture mBackground;
+        /** Repère source de la tuile */
+        SDL_Rect mTileSrc;
+        /** Repère de destination de la tuile */
+        SDL_Rect mTileDest;
+        /** Repère source du background */
+        SDL_Rect mBackgroundSrc;
+        /** Repère de destination du background */
+        SDL_Rect mBackgroundDest;
+        /** Vecteur des objets contenu dans le monde */
+        std::vector<GameObject*> mObjects;
     };
 }
 

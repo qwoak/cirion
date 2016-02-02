@@ -20,38 +20,32 @@
 
 /**
  * @file    graphic.hpp
- * @version 0.1
- * @author  Jérémy S. "Qwoak" <qwoak11@gmail.com>
- * @date    16 Octobre 2015
- * @brief   élement graphique simple.
+ * @version 0.1.2
+ * @author  Jérémy S. "Qwoak"
+ * @date    21 Decembre 2015
+ * @brief   Element graphique singulier.
  */
 
 #ifndef GRAPHIC_HPP
 #define GRAPHIC_HPP
 
-#include <Cirion/object.hpp>
+#include <Cirion/gameobject.hpp>
 
 namespace cirion
 {
-    /**
-     * @class Graphic graphic.hpp
-     *
-     * Une classe pour manipuler de simple élements graphiques.
-     */
-    class Graphic: public Object
+    class Graphic : public GameObject
     {
         public:
-        /* +------------------------------------------------------------+
-           ! Déclaration des constructeurs / déstructeurs.              !
-           +------------------------------------------------------------+ */
+        /* +----------------------------------------------------------------+
+           ! Déclaration des constructeurs / déstructeurs.                  !
+           +----------------------------------------------------------------+ */
         Graphic();
         ~Graphic();
-        /* +------------------------------------------------------------+
-           ! Déclaration des méthodes publiques.                        !
-           +------------------------------------------------------------+ */
-        void create();
-        void update();
-        void handleEvent();
+        /* +----------------------------------------------------------------+
+           ! Déclaration des méthodes publiques.                            !
+           +----------------------------------------------------------------+ */
+        void handleEvent( SDL_Event* event = NULL );
+        void update( int timeStep = 0 );
     };
 }
 

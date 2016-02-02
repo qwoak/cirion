@@ -20,8 +20,8 @@
 
 /**
  * @file    timer.cpp
- * @version 1.0
- * @author  Jérémy S. "Qwoak" <qwoak11@gmail.com>
+ * @version 1
+ * @author  Jérémy S. "Qwoak"
  * @date    22 Août 2015
  * @brief   Minuterie
  */

@@ -19,49 +19,52 @@
  */
 
 /**
- * @file    timer.hpp
- * @version 1.0
- * @author  Jérémy S. "Qwoak" <qwoak11 at gmail dot com>
- * @date    22 Août 2015
- * @brief   Minuterie
+ * @file    hiro.hpp
+ * @version 0.2
+ * @author  Jérémy S. "Qwoak"
+ * @date    31 Janvier 2016
+ * @brief   Personnage jouable.
  */
 
-#ifndef TIMER_HPP
-#define TIMER_HPP
+#ifndef HIRO_HPP
+#define HIRO_HPP
 
-#include <SDL2/SDL.h>
+#include <Cirion/entity.hpp>
+#include <Cirion/gameobject.hpp>
+#include <Cirion/sprite.hpp>
+
+#define HIRO_XVELOCITY_MAX  0.1f       // Pixels / ms
+#define HIRO_XVELOCITY_STEP 0.0005f   // Pixels / ms
 
 namespace cirion
 {
-    /**
-     * @class Timer timer.hpp
-     *
-     * Une classe pour mesurer l'écoulement du temps.
-     */
-    class Timer
+    class Hiro : public Entity
     {
         public:
         /* +----------------------------------------------------------------+
            ! Déclaration des constructeurs / déstructeurs.                  !
            +----------------------------------------------------------------+ */
-        Timer();
+        Hiro();
+        ~Hiro();
         /* +----------------------------------------------------------------+
-           ! Déclaration des méthodes.                                      !
+           ! Déclaration des méthodes publiques.                            !
            +----------------------------------------------------------------+ */
-        bool isRunning();
-        void start();
-        void stop();
-        void reset();
-        Uint32 getTicks();
+        void create( const char* entityName );
+        void handleEvent( SDL_Event* event = NULL );
+        void update( int timeStep = 0 );
 
         private:
         /* +----------------------------------------------------------------+
-           ! Déclaration des attributs.                                     !
+           ! Déclaration des attributs privés.                              !
            +----------------------------------------------------------------+ */
-        bool mRunning;      //!< Drapeau de mise en fonction
-        Uint32 mStartTicks; //!< Compteur de battements au démarrage
-        Uint32 mStopTicks;  //!< Compteur de battements à l'arrêt
+        float mXVelocity;
+        float mYVelocity;
+        bool mInputLeft;
+        bool mInputRight;
+        bool mStatusGoLeft;
+        bool mStatusGoRight;
+        Sprite* mMainSprite;
     };
 }
 
-#endif // TIMER_HPP
+#endif // HIRO_HPP

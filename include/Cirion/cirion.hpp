@@ -20,27 +20,41 @@
 
 /**
  * @file    cirion.hpp
- * @version 0.2
- * @author  Jérémy S. "Qwoak" <qwoak11@gmail.com>
- * @date    08 Novembre 2015
- * @brief   Cirion Engine.
+ * @version 0.2.3
+ * @author  Jérémy S. "Qwoak"
+ * @date    13 Janvier 2016
+ * @brief   Coeur du moteur
  */
 
 #ifndef CIRION_HPP
 #define CIRION_HPP
-#define CIRION_VERSION  (const char*)"0.3" // major.minor[.build[.revision]]
-#define RENDERER_WIDTH  320
-#define RENDERER_HEIGHT 240
 
-#include <Cirion/object.hpp>
+#include <vector>
+#include <Cirion/config.hpp>
+#include <Cirion/gameobject.hpp>
 #include <Cirion/texture.hpp>
+#include <Cirion/timer.hpp>
+#include <Cirion/world.hpp>
+
+extern const char* gVersion;
+extern const char* gWorkingDir;
+extern const int gRendererWidth;
+extern const int gRendererHeight;
+extern cirion::Config gConfig;
+extern bool gIsRunning;
+extern cirion::Timer gRenderTimer;
+extern SDL_Window* gWindow;
+extern SDL_Renderer* gRenderer;
+extern SDL_Event gEvent;
+extern std::vector<cirion::Texture*> gTextures;
+extern std::vector<cirion::GameObject*> gGameObjects;
+extern cirion::World gWorld;
 
 namespace cirion
 {
     void init();
-    void setWorkingDir( char* path );
     void handleEvents();
-    void update();
+    void update( int timeStep = 0 );
     void render();
     void run();
     void quit();

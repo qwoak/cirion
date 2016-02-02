@@ -20,21 +20,20 @@
 
 /**
  * @file    surface.cpp
- * @version 0.2
- * @author  Jérémy S. "Qwoak" <qwoak11@gmail.com>
- * @date    08 Novembre 2015
+ * @version 0.2.1.2
+ * @author  Jérémy S. "Qwoak"
+ * @date    19 Janvier 2016
  * @brief   Manipulation des surfaces.
  */
 
 #include <iostream>
 #include <sstream>
 #include <Cirion/ciexception.hpp>
+#include <Cirion/cirion.hpp>
 #include <Cirion/log.hpp>
-#include <Cirion/surface.hpp>
+#include <Cirion/surface.hpp> // R_MASK, G_MASK, B_MASK, A_MASK
 
 using namespace std;
-
-extern SDL_Window* gWindow; //!< cf cirion.cpp
 
 /* +------------------------------------------------------------------------+
    ! Définition des constructeurs / déstructeurs.                           !
@@ -52,7 +51,6 @@ cirion::Surface::~Surface()
     if( mSurface != NULL )
     {
         SDL_FreeSurface( mSurface );
-
         log( (char*)"Surface freed.", __PRETTY_FUNCTION__ );
         mSurface = NULL;
     }
@@ -65,20 +63,13 @@ cirion::Surface::~Surface()
 //! @brief Procédure de création d'une surface vide.
 //! @param width Largeur de la nouvelle surface en pixels.
 //! @param height Hauteur de la nouvelle surface en pixels.
-//! @throw CiException
+//! @throw CiException en cas d'échec.
 void cirion::Surface::create( int width, int height )
 {
     //! Un flux de chaîne pour le journal.
     ostringstream oss;
     //! La nouvelle surface crée.
     SDL_Surface*  surface = NULL;
-    //! Le format d'affichage actuel pour l'optimisation.
-    Uint8         bitsPerPixels;
-    //! Le masque RGBA.
-    Uint32        rmask,
-                  gmask,
-                  bmask,
-                  amask;
 
     // --- SDL2 est-elle initialisée ? -----------------------------------------
     if ( !(SDL_WasInit(0) & SDL_INIT_VIDEO) )
@@ -89,31 +80,15 @@ void cirion::Surface::create( int width, int height )
         );
     }
 
-    // --- Définition du masque ------------------------------------------------
-    #if SDL_BYTEORDER == SDL_BIG_ENDIAN
-        rmask = 0xff000000;
-        gmask = 0x00ff0000;
-        bmask = 0x0000ff00;
-        amask = 0x000000ff;
-    #else
-        rmask = 0x000000ff;
-        gmask = 0x0000ff00;
-        bmask = 0x00ff0000;
-        amask = 0xff000000;
-    #endif
-
     // --- Libération de l'ancienne surface, si elle existe. -------------------
     if( mSurface != NULL )
     {
         SDL_FreeSurface( mSurface );
     }
 
-    // --- Récuperation du format d'affichage. ---------------------------------
-    bitsPerPixels = SDL_GetWindowSurface( gWindow )->format->BitsPerPixel;
-
-    // --- Création d'une nouvelle surface optimisée. --------------------------
-    surface = SDL_CreateRGBSurface( 0, width, height, bitsPerPixels, rmask,
-        gmask, bmask, amask );
+    // --- Création d'une nouvelle surface. ------------------------------------
+    surface = SDL_CreateRGBSurface( 0, width, height, 32, R_MASK, G_MASK,
+        B_MASK, A_MASK );
 
     if ( surface == NULL )
     {
@@ -123,13 +98,19 @@ void cirion::Surface::create( int width, int height )
         throw CiException( oss.str().c_str(), __PRETTY_FUNCTION__ );
     }
 
+    // --- Définition de la couleur clé pour la transparence. ------------------
+    SDL_SetColorKey( surface, SDL_TRUE, 0x00000000 );
+
     oss << "New "
+        #ifdef DEBUG
         << surface->w
-        << "*"
+        << "x"
         << surface->h
-        << " @ "
-        << (unsigned int)surface->format->BitsPerPixel
-        << "bpp surface created.";
+        << " px "
+        << SDL_GetPixelFormatName( surface->format->format )
+        << " "
+        #endif // DEBUG
+        << "surface created.";
 
     log( oss.str().c_str(), __PRETTY_FUNCTION__ );
     mSurface = surface;
@@ -137,13 +118,15 @@ void cirion::Surface::create( int width, int height )
 
 //! @brief Procédure de création d'une surface optimisée à partir d'un bitmap.
 //! @param filepath Chemin vers le fichier bitmap.
-//! @throw CiException
+//! @throw CiException en cas d'échec.
 void cirion::Surface::create( const char* filepath )
 {
     //! Un flux de chaîne pour le journal.
     ostringstream oss;
     //! La surface crée à partir du fichier.
     SDL_Surface*  surface           = NULL;
+    //! Le format des pixels de la surface convertie.
+    Uint32        pixelFormat;
     //! La surface optimisée pour le format d'affichage courrant.
     SDL_Surface*  optimized_surface = NULL;
 
@@ -174,12 +157,10 @@ void cirion::Surface::create( const char* filepath )
     }
 
     // --- Création d'une surface optimisée. -----------------------------------
-    optimized_surface = SDL_ConvertSurface(
+    pixelFormat = SDL_MasksToPixelFormatEnum( 32, R_MASK, G_MASK, B_MASK,
+        A_MASK );
 
-        surface,
-        SDL_GetWindowSurface( gWindow )->format,
-        0
-    );
+    optimized_surface = SDL_ConvertSurfaceFormat( surface, pixelFormat, 0 );
 
     if( optimized_surface == NULL )
     {
@@ -190,12 +171,15 @@ void cirion::Surface::create( const char* filepath )
     }
 
     oss << "New "
+        #ifdef DEBUG
         << optimized_surface->w
-        << "*"
+        << "x"
         << optimized_surface->h
-        << "px @ "
-        << (unsigned int)optimized_surface->format->BitsPerPixel
-        << "bpp surface created from \""
+        << " px "
+        << SDL_GetPixelFormatName( optimized_surface->format->format )
+        << " "
+        #endif // DEBUG
+        << "surface created from \""
         << filepath
         << "\".";
 
@@ -209,7 +193,7 @@ void cirion::Surface::create( const char* filepath )
 
 //! @brief Procédure de définition du mode de simulation de la transparence.
 //! @param mode Le mode de simulation de la transparence.
-//! @throw CiException
+//! @throw CiException en cas d'échec.
 void cirion::Surface::setBlendMode( SDL_BlendMode mode )
 {
     if( SDL_SetSurfaceBlendMode( mSurface, mode ) != 0 )
@@ -225,7 +209,7 @@ void cirion::Surface::setBlendMode( SDL_BlendMode mode )
 
 //! @brief Procédure d'application de la modulation alpha.
 //! @param alpha Quantité de transparence.
-//! @throw CiException
+//! @throw CiException en cas d'échec.
 void cirion::Surface::setAlphaMod( Uint8 alpha )
 {
     if( SDL_SetSurfaceAlphaMod( mSurface, alpha ) != 0 )
@@ -243,7 +227,7 @@ void cirion::Surface::setAlphaMod( Uint8 alpha )
 //! @param red Quantité de rouge.
 //! @param green Quantité de vert.
 //! @param blue Quantité de bleu.
-//! @throw CiException
+//! @throw CiException en cas d'échec.
 void cirion::Surface::setRgbMod( Uint8 red, Uint8 green, Uint8 blue )
 {
     if( SDL_SetSurfaceColorMod( mSurface, red, green, blue ) != 0 )

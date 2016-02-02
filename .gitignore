@@ -1,0 +1,7 @@
+/build
+/include/SDL2
+/include/tinyxml2.h
+/lib
+/obj
+.DS_Store
+
