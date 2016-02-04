@@ -1,4 +1,0 @@
-<config>
-	<window fs="false" w="640" h="480"/>
-	<renderer hw="true" vsync="true"/>
-</config>
