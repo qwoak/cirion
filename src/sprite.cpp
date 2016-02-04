@@ -95,10 +95,10 @@ void cirion::Sprite::create( XMLElement* spriteNode )
         throw CiException( (const char*)"Unable to process sprite creation.",
             __PRETTY_FUNCTION__ );
     }
-	
-	// Définition des dimensions du sprite.
-	mSrc.w  = spriteNode->IntAttribute( (const char*)"src_w" );
-	mSrc.h  = spriteNode->IntAttribute( (const char*)"src_h" );
+    
+    // Définition des dimensions du sprite.
+    mSrc.w  = spriteNode->IntAttribute( (const char*)"src_w" );
+    mSrc.h  = spriteNode->IntAttribute( (const char*)"src_h" );
     mDest.w = mSrc.w;
     mDest.h = mSrc.h;
     //cout << "mSrc.w = " << mSrc.w << endl

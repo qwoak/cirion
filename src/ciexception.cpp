@@ -19,11 +19,11 @@
  */
 
 /**
- * @file	ciexception.cpp
- * @version	0.1.1
+ * @file    ciexception.cpp
+ * @version 0.1.1
  * @author  Jérémy S. "Qwoak"
- * @date	23 Août 2015
- * @brief	Exception Cirion.
+ * @date    23 Août 2015
+ * @brief   Exception Cirion.
  */
 
 #include <iostream>
@@ -33,18 +33,18 @@
 using namespace std;
 
 /* +------------------------------------------------------------------------+
-   ! Définitions constructeurs / déstructeurs.								!
+   ! Définitions constructeurs / déstructeurs.                              !
    +------------------------------------------------------------------------+ */
 
 //! @brief Constructeur de la classe CiException.
 //! @param what_str Message de l'exception.
 //! @param from_str Origine de l'exception.
 cirion::CiException::CiException(
-	const char* whatStr,
-	const char* fromStr) throw()
+    const char* whatStr,
+    const char* fromStr) throw()
 {
-	mWhatStr = string( whatStr );
-	mFromStr = string( fromStr );
+    mWhatStr = string( whatStr );
+    mFromStr = string( fromStr );
 }
 
 //! @brief Déstructeur de la classe CiException.
@@ -53,17 +53,17 @@ cirion::CiException::~CiException() throw()
 }
 
 /* +------------------------------------------------------------------------+
-   ! Définitions accesseurs.												!
+   ! Définitions accesseurs.                                                !
    +------------------------------------------------------------------------+ */
 
 //! @brief Retourne le message de l'exception.
 const char* cirion::CiException::what() const throw()
 {
-	return mWhatStr.c_str();
+    return mWhatStr.c_str();
 }
 
 //! @brief Retourne l'origine de l'exception.
 const char* cirion::CiException::from() const throw()
 {
-	return this->mFromStr.c_str();
+    return this->mFromStr.c_str();
 }
