@@ -20,9 +20,9 @@
 
  /**
  * @file    hiro.cpp
- * @version 0.1.1.2
+ * @version 0.1.2
  * @author  Jérémy S. "Qwoak"
- * @date    02 Février 2016
+ * @date    05 Février 2016
  * @brief   Personnage jouable.
  */
 
@@ -182,14 +182,19 @@ void cirion::Hiro::handleEvent( SDL_Event* event )
 }
 
 //! @brief Procédure de mise à jour du personnage jouable.
-//! @param timeStep
-void cirion::Hiro::update( int timeStep )
+//! @param dt
+void cirion::Hiro::update( int dt, void* data )
 {
+    if( data != NULL )
+    {
+        cirion::World* world = (cirion::World*)(data);
+    }
+
     if( mStatusGoLeft )
     {
         if( mXVelocity > -HIRO_XVELOCITY_MAX )
         {
-            mXVelocity -= HIRO_XVELOCITY_STEP * timeStep;
+            mXVelocity -= HIRO_XVELOCITY_STEP * dt;
             mXVelocity  = mXVelocity < -HIRO_XVELOCITY_MAX
                         ? -HIRO_XVELOCITY_MAX
                         : mXVelocity;
@@ -200,7 +205,7 @@ void cirion::Hiro::update( int timeStep )
     {
         if( mXVelocity < 0 )
         {
-            mXVelocity += HIRO_XVELOCITY_STEP * timeStep;
+            mXVelocity += HIRO_XVELOCITY_STEP * dt;
             mXVelocity  = mXVelocity > 0
                         ? 0
                         : mXVelocity;
@@ -211,7 +216,7 @@ void cirion::Hiro::update( int timeStep )
     {
         if( mXVelocity < HIRO_XVELOCITY_MAX )
         {
-            mXVelocity += HIRO_XVELOCITY_STEP * timeStep;
+            mXVelocity += HIRO_XVELOCITY_STEP * dt;
             mXVelocity  = mXVelocity > HIRO_XVELOCITY_MAX
                         ? HIRO_XVELOCITY_MAX
                         : mXVelocity;
@@ -222,15 +227,15 @@ void cirion::Hiro::update( int timeStep )
     {
         if( mXVelocity > 0 )
         {
-            mXVelocity -= HIRO_XVELOCITY_STEP * timeStep;
+            mXVelocity -= HIRO_XVELOCITY_STEP * dt;
             mXVelocity  = mXVelocity < 0
                         ? 0
                         : mXVelocity;
         }
     }
 
-    mPosition.mX += mXVelocity * timeStep;
+    mPosition.mX += mXVelocity * dt;
 
     // Mise à jour du sprite
-    mMainSprite->update( timeStep );
+    mMainSprite->update( dt );
 }

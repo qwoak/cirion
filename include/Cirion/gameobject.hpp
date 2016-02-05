@@ -19,11 +19,11 @@
  */
 
  /**
- * @file    object.hpp
- * @version 0.4.3
+ * @file    gameobject.hpp
+ * @version 0.4.4
  * @author  Jérémy S. "Qwoak"
- * @date    12 Janvier 2016
- * @brief   Objet graphique
+ * @date    05 Février 2016
+ * @brief   Manipulation des objets.
  */
 
 #ifndef GAMEOBJECT_HPP
@@ -46,7 +46,7 @@ namespace cirion
         GameObject();
         virtual ~GameObject();
         virtual void handleEvent( SDL_Event* event = NULL ) = 0;
-        virtual void update( int timeStep = 0 ) = 0;
+        virtual void update( int dt = 0, void* data = NULL ) = 0;
         virtual void draw( const Point2f& origin = Point2f( 0, 0 ) );
         void setTexture( const char* name );
         void setSrc( int x, int y, int w, int h );

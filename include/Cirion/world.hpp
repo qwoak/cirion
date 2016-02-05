@@ -20,9 +20,9 @@
 
  /**
  * @file    world.hpp
- * @version 0.4.1
+ * @version 0.4.1.1
  * @author  Jérémy S. "Qwoak"
- * @date    21 Décembre 2015
+ * @date    05 Février 2016
  * @brief   Le monde.
  */
 
@@ -56,7 +56,7 @@ namespace cirion
         ~World();
         void create( const char* name );
         void handleEvent( SDL_Event* event = NULL );
-        void update( int timeStep = 0 );
+        void update( int dt = 0 );
         void draw();
 
     private:

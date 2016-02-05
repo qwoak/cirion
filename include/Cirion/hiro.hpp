@@ -51,7 +51,7 @@ namespace cirion
            +----------------------------------------------------------------+ */
         void create( const char* entityName );
         void handleEvent( SDL_Event* event = NULL );
-        void update( int timeStep = 0 );
+        void update( int dt = 0, void* data = NULL );
 
         private:
         /* +----------------------------------------------------------------+

@@ -20,9 +20,9 @@
 
  /**
  * @file    world.cpp
- * @version 0.2.2.4
+ * @version 0.2.3
  * @author  Jérémy S. "Qwoak"
- * @date    01 Février 2016
+ * @date    05 Février 2016
  * @brief   Le monde.
  */
 
@@ -68,6 +68,7 @@ void cirion::World::create( const char* name )
     {
         /* Chargement du fichier CMF. */
         #ifdef DEBUG
+            // On ne se préoccupe pas du checksum en DEBUG
             mCmf.load( name, false );
         #else
             mCmf.load( name );
@@ -76,7 +77,6 @@ void cirion::World::create( const char* name )
         /* Création des ressources. */
         mTileset.create( mCmf.getTilesetName() );
         mBackground.create( mCmf.getBackgroundName() );
-        
     }
 
     catch( CiException const& e )
@@ -112,7 +112,7 @@ void cirion::World::handleEvent( SDL_Event* event )
 }
 
 //! @brief Procédure de mise à jour du monde.
-void cirion::World::update( int timeStep )
+void cirion::World::update( int dt )
 {
     // --- Déplacement vertical. -----------------------------------------------
 
@@ -137,7 +137,7 @@ void cirion::World::update( int timeStep )
     /* Pacrours de la liste des objets */
     for( size_t i = 0; i != mObjects.size(); i++ )
     {
-        mObjects[i]->update();
+        mObjects[i]->update( dt, this );
     }
 }
 

@@ -20,9 +20,9 @@
 
  /**
  * @file    graphic.cpp
- * @version 0.2.1
+ * @version 0.2.2
  * @author  Jérémy S. "Qwoak"
- * @date    21 Décembre 2015
+ * @date    05 Février 2015
  * @brief   Element graphique singulier.
  */
 
@@ -54,7 +54,7 @@ void cirion::Graphic::handleEvent( SDL_Event* event )
 
 //! @brief Procédure de mise à jour de l'objet.
 //! @param timeStep Temps écoulé depuis la dernière image.
-void cirion::Graphic::update( int timeStep )
+void cirion::Graphic::update( int dt, void* data )
 {
     //!< Il n'y a pas de mises à jour à effectuer pour l'objet Graphic.
 }

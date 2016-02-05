@@ -22,7 +22,7 @@
  * @file    sprite.hpp
  * @version 0.3
  * @author  Jérémy S. "Qwoak"
- * @date    24 Janvier 2016
+ * @date    05 Février 2016
  * @brief   Manipulation des sprites.
  */
 
@@ -69,7 +69,7 @@ namespace cirion
         void create( tinyxml2::XMLElement* spriteNode );
         bool collide( Sprite* sprite );
         void handleEvent( SDL_Event* event = NULL );
-        void update( int timeStep = 0 );
+        void update( int dt = 0, void* data = NULL );
         void setRelative( const Point2f& relative );
         void setFacingRight( bool facingRight );
         void setAnimation( const char* name );

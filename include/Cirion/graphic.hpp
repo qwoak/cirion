@@ -20,9 +20,9 @@
 
 /**
  * @file    graphic.hpp
- * @version 0.1.2
+ * @version 0.1.3
  * @author  Jérémy S. "Qwoak"
- * @date    21 Decembre 2015
+ * @date    05 Février 2015
  * @brief   Element graphique singulier.
  */
 
@@ -45,7 +45,7 @@ namespace cirion
            ! Déclaration des méthodes publiques.                            !
            +----------------------------------------------------------------+ */
         void handleEvent( SDL_Event* event = NULL );
-        void update( int timeStep = 0 );
+        void update( int dt = 0, void* data = NULL );
     };
 }
 

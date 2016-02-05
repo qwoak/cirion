@@ -20,9 +20,9 @@
 
  /**
  * @file    sprite.cpp
- * @version 0.3.2.1
+ * @version 0.3.3
  * @author  Jérémy S. "Qwoak"
- * @date    31 Janvier 2016
+ * @date    05 Février 2016
  * @brief   Manipulation des sprites.
  */
 
@@ -95,10 +95,10 @@ void cirion::Sprite::create( XMLElement* spriteNode )
         throw CiException( (const char*)"Unable to process sprite creation.",
             __PRETTY_FUNCTION__ );
     }
-    
-    // Définition des dimensions du sprite.
-    mSrc.w  = spriteNode->IntAttribute( (const char*)"src_w" );
-    mSrc.h  = spriteNode->IntAttribute( (const char*)"src_h" );
+	
+	// Définition des dimensions du sprite.
+	mSrc.w  = spriteNode->IntAttribute( (const char*)"src_w" );
+	mSrc.h  = spriteNode->IntAttribute( (const char*)"src_h" );
     mDest.w = mSrc.w;
     mDest.h = mSrc.h;
     //cout << "mSrc.w = " << mSrc.w << endl
@@ -253,14 +253,14 @@ void cirion::Sprite::handleEvent( SDL_Event* event )
 }
 
 //! @brief Procédure de mise à jour du sprite.
-//! @param timeStep
-void cirion::Sprite::update( int timeStep )
+//! @param dt
+void cirion::Sprite::update( int dt, void* data )
 {
     if(    mAnimation->frames[mFrameIndex].duration != 0
-        && mEleapsed + timeStep >= mAnimation->frames[mFrameIndex].duration )
+        && mEleapsed + dt >= mAnimation->frames[mFrameIndex].duration )
     {
         // Màj timer
-        mEleapsed = ( mEleapsed + timeStep ) 
+        mEleapsed = ( mEleapsed + dt ) 
                     % mAnimation->frames[mFrameIndex].duration;
 
         // Frame suivante
@@ -272,7 +272,7 @@ void cirion::Sprite::update( int timeStep )
     else
     {
         // Màj timer
-        mEleapsed += timeStep;
+        mEleapsed += dt;
     }
 
     if( mAnimation != NULL )
