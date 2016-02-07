@@ -20,9 +20,9 @@
 
  /**
  * @file    introbubble.cpp
- * @version 0.3.3.1
+ * @version 0.3.4
  * @author  Jérémy S. "Qwoak"
- * @date    31 Janvier 2016
+ * @date    05 Février 2016
  * @brief   Bulle utilisée dans l'introduction.
  */
 
@@ -78,11 +78,12 @@ void cirion::IntroBubble::handleEvent( SDL_Event* event )
 }
 
 //! @brief Procédure de mise à jour de la bulle.
-//! @param timeStep Temps écoulé depuis la dernière image.
-void cirion::IntroBubble::update( int timeStep )
+//! @param dt
+//! @param data
+void cirion::IntroBubble::update( int dt, void* data )
 {
     // Mise à jour de la profondeur de la bulle.
-    mBubblePosition.mZ -= 0.075 * (float)timeStep / 20;
+    mBubblePosition.mZ -= 0.075 * (float)dt / 20;
     // Mise à jour de la transparence de la texture.
     //mAlpha = -mBubblePosition.mZ / 8 * 255;
 

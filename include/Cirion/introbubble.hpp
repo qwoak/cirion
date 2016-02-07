@@ -20,9 +20,9 @@
 
 /**
  * @file    introbubble.hpp
- * @version 0.2.3
+ * @version 0.2.4
  * @author  Jérémy S. "Qwoak"
- * @date    01 Janvier 2016
+ * @date    05 Février 2016
  * @brief   Bulle utilisée dans l'introduction.
  */
 
@@ -46,7 +46,7 @@ namespace cirion
            ! Déclaration des méthodes publiques.                            !
            +----------------------------------------------------------------+ */
         void create();
-        void update( int timeStep = 0 );
+        void update( int dt = 0, void* data = NULL );
         void handleEvent( SDL_Event* event = NULL );
 
         private:
